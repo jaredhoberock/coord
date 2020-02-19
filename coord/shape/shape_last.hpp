@@ -63,10 +63,6 @@ auto shape_last(Shape&& shape)
 }
 
 
-template<class T>
-using shape_last_t = decltype(shape_last(std::declval<T>()));
-
-
 COORD_NAMESPACE_CLOSE_BRACE
 
 #include "../detail/epilogue.hpp"
