@@ -1,17 +1,127 @@
+// Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//  * Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//  * Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//  * Neither the name of NVIDIA CORPORATION nor the names of its
+//    contributors may be used to endorse or promote products derived
+//    from this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+// OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #pragma once
 
-#include <tuple>
+#include "../detail/prologue.hpp"
+
 #include <utility>
 #include <type_traits>
-#include <agency/coordinate.hpp>
-#include <agency/coordinate/detail/shape/make_shape.hpp>
-#include <agency/coordinate/detail/shape/shape_element.hpp>
-#include <agency/detail/tuple/tuple_utility.hpp>
-#include <agency/detail/point_size.hpp>
-#include <agency/tuple.hpp>
+#include "first_shape_element.hpp"
+#include "is_shape.hpp"
+#include "last_shape_element.hpp"
+#include "make_shape.hpp"
+#include "shape_append.hpp"
+#include "shape_first.hpp"
+#include "shape_last.hpp"
+#include "shape_size.hpp"
+#include "shape_truncate.hpp"
+#include "../detail/tuple_utility.hpp"
 
-namespace agency
+
+COORD_NAMESPACE_OPEN_BRACE
+
+
+// Scalar -> Scalar (terminal case)
+template<class ToShape, class FromShape,
+         COORD_REQUIRES(shape_size<ToShape>::value == 1),
+         COORD_REQUIRES(shape_size<FromShape>::value == 1)
+        >
+COORD_ANNOTATION
+ToShape shape_cast(const FromShape& shape)
 {
+  // be sure to explicitly cast the first element of FromShape to the type of ToShape's first element
+  // otherwise, the compiler complains about narrowing conversions inside of make_shape below
+  using to_element_type = first_shape_element_t<ToShape>;
+
+  return make_shape<ToShape>(static_cast<to_element_type>(shape_first(shape)));
+}
+
+
+// shape_cast is recursive and has various cases
+// declare the cases here before their definitions
+namespace detail
+{
+namespace shape_cast_detail
+{
+
+
+template<class ToShape, class FromShape>
+COORD_ANNOTATION
+ToShape shape_crosscast(const FromShape& shape);
+
+
+template<class ToShape, class FromShape>
+COORD_ANNOTATION
+ToShape shape_downcast(const FromShape& shape);
+
+
+template<class ToShape, class FromShape>
+COORD_ANNOTATION
+ToShape shape_upcast(const FromShape& shape);
+
+
+} // end shape_cast_detail
+} // end detail
+
+
+// case for casting two shapes of equal size (crosscast)
+template<class ToShape, class FromShape,
+         COORD_REQUIRES(shape_size<ToShape>::value == shape_size<FromShape>::value),
+         COORD_REQUIRES(shape_size<ToShape>::value > 1)
+        >
+COORD_ANNOTATION
+ToShape shape_cast(const FromShape& shape)
+{
+  return detail::shape_cast_detail::shape_crosscast<ToShape>(shape);
+}
+
+
+// case for casting a shape to a lower-dimensional shape (downcast)
+template<class ToShape, class FromShape,
+         COORD_REQUIRES(shape_size<ToShape>::value < shape_size<FromShape>::value)
+        >
+COORD_ANNOTATION
+ToShape shape_cast(const FromShape& shape)
+{
+  return detail::shape_cast_detail::shape_downcast<ToShape>(shape);
+}
+
+
+// case for casting a shape to a higher-dimensional shape (upcast)
+template<class ToShape, class FromShape,
+         COORD_REQUIRES(shape_size<ToShape>::value > shape_size<FromShape>::value)
+        >
+COORD_ANNOTATION
+ToShape shape_cast(const FromShape& shape)
+{
+  return detail::shape_cast_detail::shape_upcast<ToShape>(shape);
+}
+
+
 namespace detail
 {
 namespace shape_cast_detail
@@ -19,155 +129,63 @@ namespace shape_cast_detail
 
 
 template<class Shape>
-struct make_shape_functor
+struct shape_factory
 {
   template<class... Args>
-  __AGENCY_ANNOTATION
+  COORD_ANNOTATION
   Shape operator()(Args&&... args) const
   {
-    return detail::make_shape<Shape>(std::forward<Args>(args)...);
+    return COORD_NAMESPACE::make_shape<Shape>(std::forward<Args>(args)...);
   }
 };
 
 
-} // end shape_cast_detail
-
-
-// reduces the dimensionality of x by eliding the last dimension
-// and multiplying the second-to-last dimension by the last 
-// this function always returns a tuple, even if it's a one-element tuple
-template<class Point>
-__AGENCY_ANNOTATION
-rebind_point_size_t<
-  Point,
-  point_size<Point>::value - 1
-> project_shape_impl(const Point& x)
-{
-  using result_type = rebind_point_size_t<Point,std::tuple_size<Point>::value-1>;
-
-  auto last = detail::tuple_last(x);
-
-  // XXX WAR nvcc 7's issue with tuple_drop_invoke
-  //auto result = __tu::tuple_drop_invoke<1>(x, shape_cast_detail::make_shape_functor<result_type>());
-  result_type result = __tu::tuple_take_invoke<std::tuple_size<Point>::value - 1>(x, shape_cast_detail::make_shape_functor<result_type>());
-
-  detail::tuple_last(result) *= last;
-
-  return result;
-}
-
-
 // reduces the dimensionality of shape by eliding the last dimension
 // and multiplying the second-to-last dimension by the last
-// this function unwraps single element tuples
-template<class ShapeTuple>
-__AGENCY_ANNOTATION
-auto project_shape(const ShapeTuple& shape)
-  -> typename std::decay<
-       decltype(
-         detail::unwrap_single_element_tuple(
-           detail::project_shape_impl(shape)
-         )
-       )
-     >::type
+// this function does not return single element tuples -- it unwraps them into integral types
+template<class Shape,
+         COORD_REQUIRES(is_shape<Shape>::value),
+         COORD_REQUIRES(shape_size<Shape>::value > 1)
+        >
+COORD_ANNOTATION
+shape_truncate_t<Shape> project_shape(const Shape& shape)
 {
-  return detail::unwrap_single_element_tuple(detail::project_shape_impl(shape));
+  auto last = shape_last(shape);
+
+  shape_truncate_t<Shape> result = COORD_NAMESPACE::shape_truncate(shape);
+
+  // XXX this multiplication assumes that both shape_last(result) and last are scalars
+  //     but combining dimensions needs to be another recursive process
+  //     the "innermost, rightmost" element of shape_last(result) should receive this multiplication, shouldn't it?
+  //
+  // XXX this should look more like this:
+  //
+  //         innermost_rightmost_element(result) *= domain_size(last);
+  //
+  // In other words, we traverse the result to the right, and descend, and continue this process until we arrive at a scalar
+  // then, we multiply this scalar by the size of the domain spanned by last
+  shape_last(result) *= last;
+
+  return result;
 }
 
 
 // increases the dimensionality of x
 // by appending a dimension (and setting it to 1)
-template<class Point>
-__AGENCY_ANNOTATION
-rebind_point_size_t<
-  Point,
-  point_size<Point>::value + 1
-> lift_shape(const Point& x)
+template<class Shape,
+         COORD_REQUIRES(is_shape<Shape>::value)
+        >
+COORD_ANNOTATION
+shape_append_t<Shape, last_shape_element_t<Shape>> lift_shape(const Shape& shape)
 {
-  // x could be a scalar, so create an intermediate which is at least a 1-element tuple
-  using intermediate_type = rebind_point_size_t<Point,point_size<Point>::value>;
-  intermediate_type intermediate{x};
-
-  using result_type = rebind_point_size_t<Point,point_size<Point>::value + 1>;
-
-  result_type result = __tu::tuple_append_invoke(intermediate, 1, shape_cast_detail::make_shape_functor<result_type>());
-
-  return result;
+  return shape_append(shape, last_shape_element_t<Shape>{1});
 }
 
-
-// shape_cast is recursive and has various overloads
-// declare them here before their definitions
-
-// Scalar -> Scalar (base case)
-template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value == point_size<FromShape>::value) &&
-  (point_size<ToShape>::value == 1),
-  ToShape
->::type
-  shape_cast(const FromShape& x);
-
-
-// case for casting two shapes of equal size (recursive case)
-template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value == point_size<FromShape>::value) &&
-  (point_size<ToShape>::value > 1),
-  ToShape
->::type
-  shape_cast(const FromShape& x);
-
-
-// downcast (recursive)
-template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value < point_size<FromShape>::value),
-  ToShape
->::type
-  shape_cast(const FromShape& x);
-
-
-// upcast (recursive)
-template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value > point_size<FromShape>::value),
-  ToShape
->::type
-  shape_cast(const FromShape& x);
-
-
-// definitions of shape_cast follow
-
-
-// terminal case for casting shapes of size 1
-template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value == point_size<FromShape>::value) &&
-  (point_size<ToShape>::value == 1),
-  ToShape
->::type
-  shape_cast(const FromShape& x)
-{
-  // we have to cast the 0th element of x to the type of ToShape's 0th element
-  using to_element_type = shape_element_t<0,ToShape>;
-
-  // x may or may not be a tuple, so it may not be safe to get() its 0th element
-  // use get_if() to return x directly when x is not a tuple-like object
-  to_element_type casted_element = static_cast<to_element_type>(detail::get_if<0>(x,x));
-
-  return detail::make_shape<ToShape>(casted_element);
-}
 
 struct shape_cast_functor
 {
   template<class ToShape, class FromShape>
-  __AGENCY_ANNOTATION
+  COORD_ANNOTATION
   auto operator()(const ToShape&, const FromShape& x)
     -> decltype(
          shape_cast<ToShape>(x)
@@ -178,46 +196,36 @@ struct shape_cast_functor
 };
 
 
-// recursive case for casting to a shape of equal size
 template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value == point_size<FromShape>::value) &&
-  (point_size<ToShape>::value > 1),
-  ToShape
->::type
-  shape_cast(const FromShape& x)
+COORD_ANNOTATION
+ToShape shape_crosscast(const FromShape& x)
 {
-  return __tu::tuple_map_with_make(shape_cast_functor{}, shape_cast_detail::make_shape_functor<ToShape>{}, ToShape{}, x);
+  // XXX rename tuple_map_with_make to tuple_map_with_factory
+  return detail::tu::tuple_map_with_make(detail::shape_cast_detail::shape_cast_functor{}, detail::shape_cast_detail::shape_factory<ToShape>{}, ToShape{}, x);
 }
 
 
-// recursive case for casting to a lower dimensional shape
 template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value < point_size<FromShape>::value),
-  ToShape
->::type
-  shape_cast(const FromShape& x)
+COORD_ANNOTATION
+ToShape shape_downcast(const FromShape& x)
 {
-  return shape_cast<ToShape>(project_shape(x));
+  return COORD_NAMESPACE::shape_cast<ToShape>(project_shape(x));
 }
 
 
-// recursive case for casting to a higher dimensional shape
 template<class ToShape, class FromShape>
-__AGENCY_ANNOTATION
-typename std::enable_if<
-  (point_size<ToShape>::value > point_size<FromShape>::value),
-  ToShape
->::type
-  shape_cast(const FromShape& x)
+COORD_ANNOTATION
+ToShape shape_upcast(const FromShape& x)
 {
-  return shape_cast<ToShape>(lift_shape(x));
+  return COORD_NAMESPACE::shape_cast<ToShape>(detail::shape_cast_detail::lift_shape(x));
 }
 
 
+} // end shape_cast_detail
 } // end detail
-} // end agency
+
+
+COORD_NAMESPACE_CLOSE_BRACE
+
+#include "../detail/epilogue.hpp"
 
