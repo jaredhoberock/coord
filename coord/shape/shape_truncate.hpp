@@ -133,6 +133,7 @@ namespace shape_truncate_detail
 
 
 template<class Shape, std::size_t... Indices>
+COORD_ANNOTATION
 shape_truncate_t<Shape> shape_truncate_impl(const Shape& shape, index_sequence<Indices...>)
 {
   return shape_truncate_t<Shape>{tu::get<Indices>(shape)...};
@@ -147,6 +148,7 @@ template<class Shape,
          COORD_REQUIRES(is_shape<Shape>::value),
          COORD_REQUIRES(shape_size<Shape>::value > 1)
         >
+COORD_ANNOTATION
 shape_truncate_t<Shape> shape_truncate(const Shape& shape)
 {
   return detail::shape_truncate_detail::shape_truncate_impl(shape, COORD_NAMESPACE::detail::make_index_sequence<shape_size<Shape>::value - 1>{});
