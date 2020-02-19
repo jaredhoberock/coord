@@ -125,6 +125,7 @@ namespace shape_append_detail
 template<class Shape, class T, std::size_t... Indices,
          COORD_REQUIRES(std::is_integral<Shape>::value)
         >
+COORD_ANNOTATION
 shape_append_t<Shape,T> shape_append_impl(const Shape& shape, const T& to_append, index_sequence<Indices...>)
 {
   return shape_append_t<Shape,T>{shape, to_append};
@@ -134,6 +135,7 @@ shape_append_t<Shape,T> shape_append_impl(const Shape& shape, const T& to_append
 template<class Shape, class T, std::size_t... Indices,
          COORD_REQUIRES(!std::is_integral<Shape>::value)
         >
+COORD_ANNOTATION
 shape_append_t<Shape,T> shape_append_impl(const Shape& shape, const T& to_append, index_sequence<Indices...>)
 {
   return shape_append_t<Shape,T>{tu::get<Indices>(shape)..., to_append};
@@ -148,6 +150,7 @@ template<class Shape,
          class T,
          COORD_REQUIRES(is_shape<Shape>::value)
         >
+COORD_ANNOTATION
 shape_append_t<Shape,T> shape_append(const Shape& shape, const T& to_append)
 {
   return detail::shape_append_detail::shape_append_impl(shape, to_append, detail::make_index_sequence<shape_size<Shape>::value>{});
