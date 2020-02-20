@@ -52,8 +52,8 @@ template<class Tuple, template<class...> class FallbackTupleTemplate, class... R
 struct tuple_rebind_or
 {
   private:
-    template<class Tuple_ = Tuple,
-             class Result = tu::tuple_rebind_t<Tuple, ReboundTypes...>
+    template<class Tuple_,
+             class Result = tu::tuple_rebind_t<Tuple_, ReboundTypes...>
             >
     static Result rebind(int);
 
