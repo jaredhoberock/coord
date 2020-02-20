@@ -29,7 +29,7 @@ all-test-programs : $(basename $(wildcard *.hpp))
 all-test-results : $(addprefix test., $(basename $(wildcard *.hpp)))
 
 clean:
-	rm -f *.test *.cpp
+	rm -f *.cpp $(basename $(wildcard *.hpp))
 
 .PHONY : test clean $(all-test-results)
 
