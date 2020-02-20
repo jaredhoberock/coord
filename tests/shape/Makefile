@@ -11,19 +11,19 @@ test : all-test-sources all-test-programs all-test-results
 %.cpp : %.hpp
 	@echo '#include <iostream>\n#include "'$<'"\nint main(){ test_'$(basename $<)'(); std::cout << "OK" << std::endl; return 0;}' > $@
 
-# this compiles a .cpp file into an executable .test file
-%.test : %.cpp
+# this compiles a .cpp file into an executable file (without a file extension)
+% : %.cpp
 	$(CXX) $(CCFLAGS) $< -lstdc++ -o $@
 
-# this runs an executable .test file silently
-test.% : %.test
+# this runs an executable silently
+test.% : %
 	./$< > /dev/null
 
 # this is a list of test program sources
 all-test-sources: $(addsuffix .cpp, $(basename $(wildcard *.hpp)))
 
 # this is a list of test program names
-all-test-programs : $(addsuffix .test, $(basename $(wildcard *.hpp)))
+all-test-programs : $(basename $(wildcard *.hpp))
 
 # this is a list of test program names prefixed by test
 all-test-results : $(addprefix test., $(basename $(wildcard *.hpp)))
