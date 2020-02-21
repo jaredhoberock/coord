@@ -210,6 +210,18 @@ class lattice
       return iterator(*this, iterator::past_the_end(*this));
     }
 
+    COORD_ANNOTATION
+    bool operator==(const lattice& other) const
+    {
+      return (origin_ == other.origin()) and (shape_ == other.shape());
+    }
+
+    COORD_ANNOTATION
+    bool operator!=(const lattice& other) const
+    {
+      return !operator==(other);
+    }
+
   private:
     index_type origin_;
     shape_type shape_;
