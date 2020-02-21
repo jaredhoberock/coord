@@ -1,6 +1,6 @@
 #pragma once
 
-#include "prologue.hpp"
+#include "detail/prologue.hpp"
 
 #include "shape/common_shape.hpp"
 #include "shape/is_shape.hpp"
@@ -15,5 +15,5 @@
 #include "shape/shape_size.hpp"
 #include "shape/shape_truncate.hpp"
 
-#include "epilogue.hpp"
+#include "detail/epilogue.hpp"
 
