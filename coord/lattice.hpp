@@ -109,13 +109,13 @@ class lattice
     // variadic constructor
     template<class Size1, class... Sizes,
              COORD_REQUIRES(
-               detail::conjunction<std::is_convertible<Size1,std::size_t>, std::is_convertible<Sizes,std::size_t>...>::value
+               std::is_constructible<shape_type, Size1, Sizes...>::value
              ),
              COORD_REQUIRES(sizeof...(Sizes) == (rank() - 1))
             >
     COORD_ANNOTATION
     explicit lattice(const Size1& dimension1, const Sizes&... dimensions)
-      : lattice(make_shape<shape_type>(dimension1, dimensions...))
+      : lattice(COORD_NAMESPACE::make_shape<shape_type>(dimension1, dimensions...))
     {}
 
     // XXX upon c++14, assert that the intializer_list is of the correct size
