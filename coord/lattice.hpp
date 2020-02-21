@@ -34,6 +34,7 @@
 #include "index/index_space_size.hpp"
 #include "point.hpp"
 #include "shape/is_shape.hpp"
+#include "shape/make_shape.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -114,16 +115,16 @@ class lattice
             >
     COORD_ANNOTATION
     explicit lattice(const Size1& dimension1, const Sizes&... dimensions)
-      : lattice(index_type{static_cast<size_t>(dimension1), static_cast<size_t>(dimensions)...})
+      : lattice(make_shape<shape_type>(dimension1, dimensions...))
     {}
 
     // XXX upon c++14, assert that the intializer_list is of the correct size
     template<class Size,
-             COORD_REQUIRES(std::is_constructible<index_type, std::initializer_list<Size>>::value)
+             COORD_REQUIRES(std::is_constructible<shape_type, std::initializer_list<Size>>::value)
             >
     COORD_ANNOTATION
     lattice(std::initializer_list<Size> dimensions)
-      : lattice(index_type{dimensions})
+      : lattice(shape_type{dimensions})
     {}
 
     // returns the value of the smallest lattice point
