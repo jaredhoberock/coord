@@ -47,12 +47,6 @@ namespace detail
 {
 
 
-template<class...> struct conjunction;
-template<> struct conjunction<> : std::true_type {};
-template<class B1> struct conjunction<B1> : B1 {};
-template<class B1, class... BN> struct conjunction<B1,BN...> : std::conditional<bool(B1::value), conjunction<BN...>, B1>::type {};
-
-
 template<class...> struct disjunction : std::false_type {};
 template<class B1> struct disjunction<B1> : B1 {};
 template<class B1, class... Bn> struct disjunction<B1, Bn...> : std::conditional<bool(B1::value), B1, disjunction<Bn...>>::type {};
