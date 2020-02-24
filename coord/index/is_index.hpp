@@ -39,9 +39,9 @@
 COORD_NAMESPACE_OPEN_BRACE
 
 
-// a forward declaration for the benefit of detail::is_tuple_like_of_shapes below
+// a forward declaration for the benefit of detail::is_tuple_like_of_indices below
 template<class T>
-struct is_shape;
+struct is_index;
 
 
 namespace detail
@@ -49,14 +49,14 @@ namespace detail
 
 
 template<class T>
-struct is_tuple_like_of_shapes
+struct is_tuple_like_of_indices
 {
   private:
     template<class U, std::size_t... I>
     static constexpr bool test_elements_of_tuple(index_sequence<I...>)
     {
       return conjunction<
-        is_shape<
+        is_index<
           typename std::tuple_element<I,U>::type
         >...
       >::value;
@@ -84,11 +84,11 @@ struct is_tuple_like_of_shapes
 } // end detail
 
 
-// a type is a shape if it
+// a type is a index if it
 //   * is an integral type, or 
-//   * it is a tuple-like type with elements which are themselves shapes
+//   * it is a tuple-like type with elements which are themselves indices
 template<class T>
-struct is_shape : detail::disjunction<std::is_integral<T>, detail::is_tuple_like_of_shapes<T>> {};
+struct is_index : detail::disjunction<std::is_integral<T>, detail::is_tuple_like_of_indices<T>> {};
 
 
 COORD_NAMESPACE_CLOSE_BRACE
