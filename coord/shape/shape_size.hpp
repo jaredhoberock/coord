@@ -45,8 +45,6 @@ namespace detail
 // A Shape is either:
 // 1. An integral type or
 // 2. A tuple of Shapes
-//
-// shape_element's implementation below needs to handle these two cases.
 
 
 // case 2: Shape is a Tuple-like type
