@@ -30,8 +30,8 @@
 
 #include <type_traits>
 #include <utility>
+#include "../detail/is_integral_reference.hpp"
 #include "../detail/tuple_utility.hpp"
-#include "detail/is_integral_reference.hpp"
 #include "detail/is_shape_reference.hpp"
 
 

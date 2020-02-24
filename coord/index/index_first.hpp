@@ -26,29 +26,43 @@
 
 #pragma once
 
-#include "../../detail/prologue.hpp"
+#include "../detail/prologue.hpp"
 
 #include <type_traits>
+#include <utility>
+#include "../detail/tuple_utility.hpp"
+#include "../detail/is_integral_reference.hpp"
+#include "detail/is_index_reference.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-namespace detail
+template<class Integral,
+         COORD_REQUIRES(detail::is_integral_reference<Integral&&>::value)
+        >
+COORD_ANNOTATION
+Integral&& index_first(Integral&& index)
 {
+  return std::forward<Integral>(index);
+}
 
 
-template<class T>
-using is_integral_reference = std::integral_constant<
-  bool,
-  std::is_reference<T>::value and std::is_integral<typename std::decay<T>::type>::value
->;
+template<class Index,
+         COORD_REQUIRES(detail::is_index_reference<Index&&>::value),
+         COORD_REQUIRES(!detail::is_integral_reference<Index&&>::value)
+        >
+COORD_ANNOTATION
+auto index_first(Index&& index)
+  -> decltype(
+       detail::tu::tuple_head(std::forward<Index>(index))
+     )
+{
+  return detail::tu::tuple_head(std::forward<Index>(index));
+}
 
-
-} // end detail
 
 COORD_NAMESPACE_CLOSE_BRACE
 
-
-#include "../../detail/epilogue.hpp"
+#include "../detail/epilogue.hpp"
 
