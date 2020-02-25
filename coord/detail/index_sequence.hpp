@@ -2,6 +2,8 @@
 
 #include "prologue.hpp"
 
+#include <cstdint>
+
 
 COORD_NAMESPACE_OPEN_BRACE
 
@@ -10,33 +12,47 @@ namespace detail
 {
 
 
-template<size_t... I> struct index_sequence {};
+template<std::size_t... I> struct index_sequence {};
 
-template<size_t Start, typename Indices, size_t End>
+template<std::size_t Start, typename Indices, std::size_t End>
 struct make_index_sequence_impl;
 
-template<size_t Start, size_t... Indices, size_t End>
+template<std::size_t Start, std::size_t... Indices, std::size_t End>
 struct make_index_sequence_impl<
   Start,
   index_sequence<Indices...>, 
   End
 >
 {
-  typedef typename make_index_sequence_impl<
+  using type = typename make_index_sequence_impl<
     Start + 1,
     index_sequence<Indices..., Start>,
     End
-  >::type type;
+  >::type;
 };
 
-template<size_t End, size_t... Indices>
+template<std::size_t End, std::size_t... Indices>
 struct make_index_sequence_impl<End, index_sequence<Indices...>, End>
 {
-  typedef index_sequence<Indices...> type;
+  using type = index_sequence<Indices...>;
 };
 
-template<size_t N>
+template<std::size_t N>
 using make_index_sequence = typename make_index_sequence_impl<0, index_sequence<>, N>::type;
+
+
+template<class Indices>
+struct make_reversed_index_sequence_impl;
+
+template<std::size_t... Indices>
+struct make_reversed_index_sequence_impl<index_sequence<Indices...>>
+{
+  using type = index_sequence<(sizeof...(Indices) - 1 - Indices)...>;
+};
+
+
+template<std::size_t N>
+using make_reversed_index_sequence = typename make_reversed_index_sequence_impl<make_index_sequence<N>>::type;
 
 
 } // end detail
