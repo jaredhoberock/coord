@@ -32,6 +32,7 @@
 #include <cstdint>
 #include <type_traits>
 #include "../detail/tuple_utility.hpp"
+#include "detail/index_subspace_size.hpp"
 #include "index_first.hpp"
 #include "index_size.hpp"
 #include "index_space_size.hpp"
@@ -84,22 +85,6 @@ std::size_t lexicographic_rank(const Index& index, const Shape& shape)
 
 namespace detail
 {
-
-
-template<class Shape>
-COORD_ANNOTATION
-std::size_t index_subspace_size(const Shape& shape, index_sequence<>)
-{
-  return 1;
-}
-
-
-template<class Shape, std::size_t axis0, std::size_t... axes>
-COORD_ANNOTATION
-std::size_t index_subspace_size(const Shape& shape, index_sequence<axis0, axes...>)
-{
-  return COORD_NAMESPACE::index_space_size(detail::tu::get<axis0>(shape)) * detail::index_subspace_size(shape, index_sequence<axes...>{});
-}
 
 
 template<std::size_t prefix_size, class Shape>
