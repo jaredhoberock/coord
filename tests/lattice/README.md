@@ -14,14 +14,14 @@ Each `<name>.hpp` file in this directory is a C++ file containing a function nam
 
 A unit test program should define a `main` function which calls the function `test_<name>`. If `test_<name>` exits normally, the test program should print "OK" to stdout, and exit normally.
 
-For example, a unit test named `bulk_execute.cpp` should look like:
+For example, a unit test named `rank.cpp` should look like:
 
     #include <iostream>
-    #include "bulk_execute.hpp"
+    #include "rank.hpp"
 
     int main()
     {
-      test_bulk_execute();
+      test_rank();
       std::cout << "OK" << std::endl;
       return 0;
     }
