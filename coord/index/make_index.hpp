@@ -45,7 +45,9 @@ namespace detail
 template<class Index>
 struct make_index_impl
 {
-  template<class... Args>
+  template<class... Args,
+           COORD_REQUIRES(std::is_constructible<Index,Args&&...>::value)
+          >
   COORD_ANNOTATION
   static Index make(Args&&... args)
   {
@@ -69,7 +71,7 @@ struct make_index_impl<std::array<T,n>>
 } // end detail
 
 
-// make_index makes a Index from a list of elements
+// make_index makes an Index from a list of elements
 template<class Index, class... Args,
          COORD_REQUIRES(is_index<Index>::value),
          COORD_REQUIRES(index_size<Index>::value == sizeof...(Args))

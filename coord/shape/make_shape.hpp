@@ -45,7 +45,9 @@ namespace detail
 template<class Shape>
 struct make_shape_impl
 {
-  template<class... Args>
+  template<class... Args,
+           COORD_REQUIRES(std::is_constructible<Shape,Args&&...>::value)
+          >
   COORD_ANNOTATION
   static Shape make(Args&&... args)
   {
