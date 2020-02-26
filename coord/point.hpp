@@ -137,11 +137,11 @@ class point : public detail::point_detail::point_base_t<T,Rank>,
                std::is_convertible<OtherT,value_type>::value
              )>
     COORD_ANNOTATION
-    point(std::initializer_list<OtherT> l)
-      : super_t(l)
+    point(std::initializer_list<OtherT> list)
+      : super_t(list)
     {
-      // l.size() needs to equal Rank
-      assert(l.size() == Rank);
+      // list.size() needs to equal Rank
+      assert(list.size() == Rank);
     }
 
 
