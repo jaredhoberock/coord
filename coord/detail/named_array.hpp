@@ -143,8 +143,12 @@ struct named_array_base<T, index_sequence<Indices...>> : named_array_element<T,I
 
   named_array_base(const named_array_base&) = default;
 
+  template<class OtherT,
+           COORD_REQUIRES(
+             std::is_convertible<OtherT,T>::value
+           )>
   COORD_ANNOTATION
-  named_array_base(std::initializer_list<T> values)
+  named_array_base(std::initializer_list<OtherT> values)
     : named_array_element<T,Indices>(values.begin()[Indices])...
   {}
 
@@ -179,8 +183,13 @@ struct named_array : named_array_base<T,make_index_sequence<N>>
 
   named_array(const named_array&) = default;
 
+  // initializer_list constructor
+  template<class OtherT,
+           COORD_REQUIRES(
+             std::is_convertible<OtherT,value_type>::value
+           )>
   COORD_ANNOTATION
-  named_array(std::initializer_list<T> values)
+  named_array(std::initializer_list<OtherT> values)
     : named_array_base<T,make_index_sequence<N>>(values)
   {}
 
