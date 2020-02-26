@@ -31,6 +31,8 @@
 #include <initializer_list>
 #include <tuple>
 #include <type_traits>
+#include "index/colexicographic_rank.hpp"
+#include "index/colexicographic_rank_to_index.hpp"
 #include "index/index_space_size.hpp"
 #include "point.hpp"
 #include "shape/is_shape.hpp"
@@ -245,6 +247,7 @@ namespace lattice_detail
 {
 
 
+// lattice_iterator traverses a lattice in row-major order
 template<class Index>
 class lattice_iterator
 {
@@ -274,6 +277,13 @@ class lattice_iterator
     }
 
     COORD_ANNOTATION
+    reference operator[](difference_type n) const
+    {
+      lattice_iterator tmp = *this + n;
+      return *tmp;
+    }
+
+    COORD_ANNOTATION
     lattice_iterator& operator++()
     {
       return increment();
@@ -290,7 +300,7 @@ class lattice_iterator
     COORD_ANNOTATION
     lattice_iterator& operator--()
     {
-      return decrement(std::is_arithmetic<Index>());
+      return decrement();
     }
 
     COORD_ANNOTATION
@@ -311,7 +321,7 @@ class lattice_iterator
     COORD_ANNOTATION
     lattice_iterator& operator+=(difference_type n)
     {
-      return advance(n, std::is_arithmetic<Index>());
+      return advance(n);
     }
 
     COORD_ANNOTATION
@@ -330,7 +340,7 @@ class lattice_iterator
     COORD_ANNOTATION
     difference_type operator-(const lattice_iterator& rhs) const
     {
-      return linearize() - rhs.linearize();
+      return colexicographic_rank() - rhs.colexicographic_rank();
     }
 
     COORD_ANNOTATION
@@ -450,15 +460,7 @@ class lattice_iterator
     COORD_ANNOTATION
     lattice_iterator& advance(difference_type n)
     {
-      difference_type idx = linearize() + n;
-
-      auto s = stride();
-
-      for(size_t i = 0; i < domain_.rank(); ++i)
-      {
-        current_[i] = domain_.origin()[i] + idx / s[i];
-        idx %= s[i];
-      }
+      current_ = domain_.origin() + colexicographic_rank_to_index<Index>(colexicographic_rank() + n, domain_.shape());
 
       return *this;
     }
@@ -473,26 +475,7 @@ class lattice_iterator
     }
 
     COORD_ANNOTATION
-    point<difference_type,lattice<Index>::rank()> stride() const
-    {
-      constexpr std::size_t rank = lattice<Index>::rank();
-
-      point<difference_type,rank> result;
-      result[rank - 1] = 1;
-
-      for(int i = rank - 1; i-- > 0;)
-      {
-        // accumulate the stride of the lower dimension
-        result[i] = result[i+1] * domain_.shape()[i];
-      }
-
-      return result;
-    }
-
-    // point-like case
-    template<COORD_REQUIRES(!std::is_arithmetic<Index>::value)>
-    COORD_ANNOTATION
-    difference_type linearize() const
+    difference_type colexicographic_rank() const
     {
       if(is_past_the_end())
       {
@@ -503,24 +486,7 @@ class lattice_iterator
       // 0-based indices along each axis
       Index idx = current_ - domain_.origin();
 
-      difference_type multiplier = 1;
-      difference_type result = 0;
-
-      for(int i = domain_.rank(); i-- > 0; )
-      {
-        result += multiplier * idx[i];
-        multiplier *= domain_.shape()[i];
-      }
-
-      return result;
-    }
-
-    // scalar case
-    template<COORD_REQUIRES(std::is_arithmetic<Index>::value)>
-    COORD_ANNOTATION
-    difference_type linearize() const
-    {
-      return current_;
+      return COORD_NAMESPACE::colexicographic_rank(idx, domain_.shape());
     }
 
     // point-like case
