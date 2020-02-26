@@ -55,6 +55,10 @@ template<std::size_t N>
 using make_reversed_index_sequence = typename make_reversed_index_sequence_impl<make_index_sequence<N>>::type;
 
 
+template<std::size_t Begin, std::size_t End>
+using make_ascending_index_range = typename make_index_sequence_impl<Begin, index_sequence<>, End>::type;
+
+
 } // end detail
 
 
