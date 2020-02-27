@@ -198,7 +198,7 @@ class lattice
     COORD_ANNOTATION
     void reshape(const Size&... dimensions)
     {
-      reshape(index_type{static_cast<size_t>(dimensions)...});
+      reshape(shape_type{static_cast<size_t>(dimensions)...});
     }
 
     COORD_ANNOTATION
