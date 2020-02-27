@@ -1,8 +1,6 @@
 #include <cassert>
 #include <coord/index/lexicographic_rank.hpp>
 #include <coord/point.hpp>
-#include <cstdio>
-#include <random>
 
 void test_lexicographic_rank()
 {
