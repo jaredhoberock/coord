@@ -379,11 +379,24 @@ class lattice_iterator
       return !(rhs > *this);
     }
 
+    // point-like case
+    template<COORD_REQUIRES(!std::is_arithmetic<Index>::value)>
     COORD_ANNOTATION
     static Index past_the_end(const lattice<Index>& domain)
     {
-      return past_the_end(domain);
+      Index result = domain.origin();
+      result[0] = domain.origin()[0] + domain.shape()[0];
+      return result;
     }
+
+    // scalar case
+    template<COORD_REQUIRES(std::is_arithmetic<Index>::value)>
+    COORD_ANNOTATION
+    static Index past_the_end(const lattice<Index>& domain)
+    {
+      return domain.origin() + domain.shape();
+    }
+
 
   private:
     // point-like case
@@ -487,24 +500,6 @@ class lattice_iterator
       Index idx = current_ - domain_.origin();
 
       return COORD_NAMESPACE::colexicographic_rank(idx, domain_.shape());
-    }
-
-    // point-like case
-    template<COORD_REQUIRES(!std::is_arithmetic<Index>::value)>
-    COORD_ANNOTATION
-    static Index past_the_end(const lattice<Index>& domain)
-    {
-      Index result = domain.origin();
-      result[0] = domain.origin() + domain.shape()[0];
-      return result;
-    }
-
-    // scalar case
-    template<COORD_REQUIRES(std::is_arithmetic<Index>::value)>
-    COORD_ANNOTATION
-    static Index past_the_end(const lattice<Index>& domain)
-    {
-      return domain.origin() + domain.shape();
     }
 
     COORD_ANNOTATION
