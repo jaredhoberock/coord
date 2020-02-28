@@ -1,3 +1,5 @@
+// note that this header file is special and does not use #pragma once
+
 #if !defined(COORD_NAMESPACE)
 
 // this branch is taken the first time this header is included

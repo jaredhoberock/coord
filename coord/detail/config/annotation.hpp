@@ -1,3 +1,5 @@
+// note that this header file is special and does not use #pragma once
+
 // COORD_ANNOTATION expands to __host__ __device__ when encountered by a
 // CUDA-capable compiler
 

@@ -1,3 +1,5 @@
+// note that this header file is special and does not use #pragma once
+
 // The COORD_REQUIRES() macro may be used in a function template's parameter list
 // to simulate Concepts.
 //

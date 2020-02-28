@@ -1,3 +1,5 @@
+// note that this header file is special and does not use #pragma once
+
 #ifndef COORD_INCLUDE_LEVEL
 
 // the first time this header is #included, this branch is processed

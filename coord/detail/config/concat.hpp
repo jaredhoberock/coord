@@ -1,3 +1,5 @@
+// note that this header file is special and does not use #pragma once
+
 // COORD_CONCAT is a macro concatenator
 
 #if !defined(COORD_CONCAT)
