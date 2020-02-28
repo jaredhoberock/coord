@@ -30,15 +30,15 @@
 
 #include <utility>
 #include <type_traits>
-#include "first_shape_element.hpp"
+#include "detail/first_shape_element.hpp"
+#include "detail/last_shape_element.hpp"
+#include "detail/shape_append.hpp"
+#include "detail/shape_first.hpp"
+#include "detail/shape_last.hpp"
+#include "detail/shape_truncate.hpp"
 #include "is_shape.hpp"
-#include "last_shape_element.hpp"
 #include "make_shape.hpp"
-#include "shape_append.hpp"
-#include "shape_first.hpp"
-#include "shape_last.hpp"
 #include "shape_size.hpp"
-#include "shape_truncate.hpp"
 #include "../detail/tuple_utility.hpp"
 
 
@@ -55,9 +55,9 @@ ToShape shape_cast(const FromShape& shape)
 {
   // be sure to explicitly cast the first element of FromShape to the type of ToShape's first element
   // otherwise, the compiler complains about narrowing conversions inside of make_shape below
-  using to_element_type = first_shape_element_t<ToShape>;
+  using to_element_type = detail::first_shape_element_t<ToShape>;
 
-  return make_shape<ToShape>(static_cast<to_element_type>(shape_first(shape)));
+  return make_shape<ToShape>(static_cast<to_element_type>(detail::shape_first(shape)));
 }
 
 
@@ -148,11 +148,11 @@ template<class Shape,
          COORD_REQUIRES(shape_size<Shape>::value > 1)
         >
 COORD_ANNOTATION
-shape_truncate_t<Shape> project_shape(const Shape& shape)
+detail::shape_truncate_t<Shape> project_shape(const Shape& shape)
 {
-  auto last = shape_last(shape);
+  auto last = detail::shape_last(shape);
 
-  shape_truncate_t<Shape> result = COORD_NAMESPACE::shape_truncate(shape);
+  detail::shape_truncate_t<Shape> result = detail::shape_truncate(shape);
 
   // XXX this multiplication assumes that both shape_last(result) and last are scalars
   //     but combining dimensions needs to be another recursive process
@@ -164,7 +164,7 @@ shape_truncate_t<Shape> project_shape(const Shape& shape)
   //
   // In other words, we traverse the result to the right, and descend, and continue this process until we arrive at a scalar
   // then, we multiply this scalar by the size of the domain spanned by last
-  shape_last(result) *= last;
+  detail::shape_last(result) *= last;
 
   return result;
 }
@@ -176,9 +176,9 @@ template<class Shape,
          COORD_REQUIRES(is_shape<Shape>::value)
         >
 COORD_ANNOTATION
-shape_append_t<Shape, last_shape_element_t<Shape>> lift_shape(const Shape& shape)
+detail::shape_append_t<Shape, detail::last_shape_element_t<Shape>> lift_shape(const Shape& shape)
 {
-  return shape_append(shape, last_shape_element_t<Shape>{1});
+  return detail::shape_append(shape, detail::last_shape_element_t<Shape>{1});
 }
 
 

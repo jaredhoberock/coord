@@ -38,7 +38,6 @@
 #include "index_space_size.hpp"
 #include "is_index.hpp"
 #include "../shape/is_shape.hpp"
-#include "../shape/shape_first.hpp"
 #include "../shape/shape_size.hpp"
 
 

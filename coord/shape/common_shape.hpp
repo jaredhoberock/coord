@@ -32,8 +32,8 @@
 #include <type_traits>
 #include "../detail/index_sequence.hpp"
 #include "../detail/tuple_utility.hpp"
+#include "detail/shape_append.hpp"
 #include "is_shape.hpp"
-#include "shape_append.hpp"
 #include "shape_element.hpp"
 #include "shape_size.hpp"
 

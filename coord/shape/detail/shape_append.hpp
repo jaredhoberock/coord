@@ -26,16 +26,16 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "../../detail/prologue.hpp"
 
 
 #include <tuple>
 #include <type_traits>
-#include "../detail/index_sequence.hpp"
-#include "../detail/tuple_utility.hpp"
-#include "is_shape.hpp"
-#include "shape_size.hpp"
-#include "shape_element.hpp"
+#include "../../detail/index_sequence.hpp"
+#include "../../detail/tuple_utility.hpp"
+#include "../is_shape.hpp"
+#include "../shape_size.hpp"
+#include "../shape_element.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -109,15 +109,12 @@ struct default_shape_append_result<std::pair<T1,T2>,ToAppend>
 
 
 } // end shape_append_detail
-} // end detail
 
 
 template<class Shape, class T, template<class...> class ResultTemplate = detail::shape_append_detail::default_shape_append_result<Shape,T>::template type>
 using shape_append_t = detail::shape_append_detail::instantiate_template_with_shape_elements_and_appended_t<Shape, T, ResultTemplate>;
 
 
-namespace detail
-{
 namespace shape_append_detail
 {
 
@@ -143,7 +140,6 @@ shape_append_t<Shape,T> shape_append_impl(const Shape& shape, const T& to_append
 
 
 } // end shape_append_detail
-} // end detail
 
 
 template<class Shape,
@@ -157,8 +153,11 @@ shape_append_t<Shape,T> shape_append(const Shape& shape, const T& to_append)
 }
 
 
+} // end detail
+
+
 COORD_NAMESPACE_CLOSE_BRACE
 
 
-#include "../detail/epilogue.hpp"
+#include "../../detail/epilogue.hpp"
 

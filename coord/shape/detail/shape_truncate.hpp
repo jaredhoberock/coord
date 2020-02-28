@@ -26,13 +26,13 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "../../detail/prologue.hpp"
 
-#include "../detail/index_sequence.hpp"
-#include "../detail/tuple_utility.hpp"
-#include "is_shape.hpp"
-#include "shape_size.hpp"
-#include "shape_element.hpp"
+#include "../../detail/index_sequence.hpp"
+#include "../../detail/tuple_utility.hpp"
+#include "../is_shape.hpp"
+#include "../shape_size.hpp"
+#include "../shape_element.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -119,15 +119,12 @@ struct default_shape_truncate_result<Shape, typename std::enable_if<(shape_size<
 
 
 } // end shape_truncate_detail
-} // end detail
 
 
 template<class Shape, template<class...> class ResultTemplate = detail::shape_truncate_detail::default_shape_truncate_result<Shape>::template type>
 using shape_truncate_t = detail::shape_truncate_detail::instantiate_template_with_truncated_shape_elements_t<Shape, ResultTemplate>;
 
 
-namespace detail
-{
 namespace shape_truncate_detail
 {
 
@@ -141,7 +138,6 @@ shape_truncate_t<Shape> shape_truncate_impl(const Shape& shape, index_sequence<I
 
 
 } // end shape_truncate_detail
-} // end detail
 
 
 template<class Shape,
@@ -155,7 +151,10 @@ shape_truncate_t<Shape> shape_truncate(const Shape& shape)
 }
 
 
+} // end detail
+
+
 COORD_NAMESPACE_CLOSE_BRACE
 
-#include "../detail/epilogue.hpp"
+#include "../../detail/epilogue.hpp"
 
