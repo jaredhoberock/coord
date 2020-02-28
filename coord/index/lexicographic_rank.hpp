@@ -32,13 +32,13 @@
 #include <cstdint>
 #include <type_traits>
 #include "../detail/tuple_utility.hpp"
+#include "../shape/is_shape.hpp"
+#include "../shape/shape_size.hpp"
+#include "detail/index_first.hpp"
 #include "detail/index_subspace_size.hpp"
-#include "index_first.hpp"
 #include "index_size.hpp"
 #include "index_space_size.hpp"
 #include "is_index.hpp"
-#include "../shape/is_shape.hpp"
-#include "../shape/shape_size.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE

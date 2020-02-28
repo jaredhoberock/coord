@@ -26,12 +26,12 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "../../detail/prologue.hpp"
 
 
 #include <tuple>
 #include <type_traits>
-#include "index_element.hpp"
+#include "../index_element.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -46,5 +46,5 @@ using first_index_element_t = typename first_index_element<Index>::type;
 
 COORD_NAMESPACE_CLOSE_BRACE
 
-#include "../detail/epilogue.hpp"
+#include "../../detail/epilogue.hpp"
 

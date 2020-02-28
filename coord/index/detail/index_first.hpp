@@ -26,13 +26,13 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "../../detail/prologue.hpp"
 
 #include <type_traits>
 #include <utility>
-#include "../detail/tuple_utility.hpp"
-#include "../detail/is_integral_reference.hpp"
-#include "detail/is_index_reference.hpp"
+#include "../../detail/tuple_utility.hpp"
+#include "../../detail/is_integral_reference.hpp"
+#include "is_index_reference.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -64,5 +64,5 @@ auto index_first(Index&& index)
 
 COORD_NAMESPACE_CLOSE_BRACE
 
-#include "../detail/epilogue.hpp"
+#include "../../detail/epilogue.hpp"
 
