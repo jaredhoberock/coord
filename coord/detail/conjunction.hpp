@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "prologue.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -46,4 +46,7 @@ template<class B1, class... BN> struct conjunction<B1,BN...> : std::conditional<
 
 
 COORD_NAMESPACE_CLOSE_BRACE
+
+
+#include "epilogue.hpp"
 

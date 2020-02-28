@@ -46,3 +46,5 @@ template<class B1, class... Bn> struct disjunction<B1, Bn...> : std::conditional
 
 COORD_NAMESPACE_CLOSE_BRACE
 
+#include "../detail/epilogue.hpp"
+

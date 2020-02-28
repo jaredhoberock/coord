@@ -50,3 +50,6 @@ ToIndex index_cast(const FromIndex& from_idx, const FromShape& from_shape, const
 
 COORD_NAMESPACE_CLOSE_BRACE
 
+
+#include "../detail/epilogue.hpp"
+
