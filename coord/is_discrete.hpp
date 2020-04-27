@@ -90,7 +90,7 @@ struct terminal_elements_are_integral : detail::disjunction<
 
 
 template<class T>
-using is_multi_index = detail::conjunction<
+using is_discrete = detail::conjunction<
   is_coordinate<T>,
   detail::terminal_elements_are_integral<T>
 >;
