@@ -33,6 +33,7 @@ COORD_NAMESPACE_OPEN_BRACE
 
 
 #include "coordinate/element.hpp"
+#include "coordinate/is_coordinate.hpp"
 #include "coordinate/rank.hpp"
 
 
