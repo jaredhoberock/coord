@@ -138,9 +138,7 @@ template<class T>
 using rank_t = decltype(COORD_NAMESPACE::rank(std::declval<T>()));
 
 
-template<class T,
-         COORD_REQUIRES(std::is_constructible<T>::value)
-        >
+template<class T>
 static constexpr auto rank_v = rank(T{});
 
 
