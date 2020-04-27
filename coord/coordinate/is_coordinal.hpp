@@ -39,7 +39,7 @@ COORD_NAMESPACE_OPEN_BRACE
 
 namespace detail
 {
-namespace is_coordinate_detail
+namespace is_coordinal_detail
 {
 
 
@@ -67,7 +67,7 @@ using rank_v_t = decltype(rank_v<T>);
 
 
 template<class T>
-struct is_coordinate_impl
+struct is_coordinal_impl
 {
   template<class U,
            COORD_REQUIRES(is_detected<rank_t, U>::value),
@@ -96,8 +96,8 @@ struct is_coordinate_impl
 
 
 template<class T>
-using is_coordinate = std::integral_constant<
-  bool, detail::is_coordinate_detail::is_coordinate_impl<T>::value
+using is_coordinal = std::integral_constant<
+  bool, detail::is_coordinal_detail::is_coordinal_impl<T>::value
 >;
 
 
@@ -105,5 +105,4 @@ COORD_NAMESPACE_CLOSE_BRACE
 
 
 #include "../detail/epilogue.hpp"
-
 
