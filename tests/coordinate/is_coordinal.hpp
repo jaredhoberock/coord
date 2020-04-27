@@ -6,7 +6,7 @@
 
 struct has_member_functions
 {
-  constexpr std::size_t rank()
+  static constexpr std::size_t rank()
   {
     return 4;
   }

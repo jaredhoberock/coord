@@ -29,7 +29,7 @@
 #include "detail/prologue.hpp"
 
 #include <type_traits>
-#include "coordinate/is_coordinate.hpp"
+#include "coordinate/is_coordinal.hpp"
 #include "detail/conjunction.hpp"
 #include "detail/disjunction.hpp"
 
@@ -91,7 +91,7 @@ struct terminal_elements_are_integral : detail::disjunction<
 
 template<class T>
 using is_discrete = detail::conjunction<
-  is_coordinate<T>,
+  is_coordinal<T>,
   detail::terminal_elements_are_integral<T>
 >;
 
