@@ -2,9 +2,18 @@
 #include <tuple>
 #include <coord/coordinate/rank.hpp>
 
+struct has_static_rank_member_function
+{
+  constexpr static std::size_t rank()
+  {
+    return 1;
+  }
+};
+
+
 struct has_rank_member_function
 {
-  constexpr std::size_t rank()
+  constexpr static std::size_t rank()
   {
     return 1;
   }
@@ -20,8 +29,10 @@ constexpr std::size_t rank(const has_rank_free_function&)
 
 void test_rank()
 {
-  static_assert(1 == coord::rank_v<has_rank_member_function>, "Error.");
-  static_assert(1 == coord::rank_v<has_rank_free_function>, "Error.");
+  static_assert(1 == coord::rank_v<has_static_rank_member_function>, "Error.");
+
+  static_assert(1 == coord::rank(has_rank_member_function{}), "Error.");
+  static_assert(1 == coord::rank(has_rank_free_function{}), "Error.");
 
   static_assert(0 == coord::rank_v<int>, "Error.");
   static_assert(0 == coord::rank_v<unsigned int>, "Error.");
@@ -36,6 +47,10 @@ void test_rank()
   static_assert(2 == coord::rank_v<std::pair<int,int>>, "Error.");
   static_assert(2 == coord::rank_v<std::tuple<int,unsigned int>>, "Error.");
   static_assert(3 == coord::rank_v<std::tuple<int,unsigned int,std::size_t>>, "Error.");
+
+  static_assert(2 == coord::rank_v<std::pair<int&,int&>>, "Error.");
+  static_assert(2 == coord::rank_v<std::tuple<const int &,unsigned int &>>, "Error.");
+  static_assert(3 == coord::rank_v<std::tuple<const int &,unsigned int, const std::size_t&>>, "Error.");
 
   using int2 = std::pair<int,int>;
   using uint3 = std::tuple<unsigned int, unsigned int, unsigned int>;

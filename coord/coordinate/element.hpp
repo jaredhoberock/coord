@@ -118,7 +118,7 @@ struct dispatch_element
            COORD_REQUIRES(!has_rank_member_function<T&&>::value),
            COORD_REQUIRES(!has_rank_free_function<T&&>::value),
            COORD_REQUIRES(!is_number<remove_cvref_t<T&&>>::value),
-           COORD_REQUIRES(is_tuple_like_of_types_with_rank<remove_cvref_t<T&&>>::value)
+           COORD_REQUIRES(is_tuple_like_of_types_with_static_rank<remove_cvref_t<T&&>>::value)
           >
   constexpr auto operator()(T&& arg) const
     -> decltype(std::get<i>(std::forward<T>(arg)))

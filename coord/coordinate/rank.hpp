@@ -48,6 +48,13 @@ namespace detail
 
 
 template<class T>
+using rank_static_member_function_t = decltype(T::rank());
+
+template<class T>
+using has_rank_static_member_function = is_detected<rank_static_member_function_t, T>;
+
+
+template<class T>
 using rank_member_function_t = decltype(std::declval<T>().rank());
 
 template<class T>
@@ -63,19 +70,52 @@ using has_rank_free_function = is_detected<rank_free_function_t, T>;
 
 
 template<class T>
-struct is_tuple_like_of_types_with_rank;
+struct is_tuple_like_of_types_with_static_rank;
 
 
 struct dispatch_rank
 {
+  // static cases do not take a parameter
+  COORD_EXEC_CHECK_DISABLE
+  template<class T,
+           COORD_REQUIRES(has_rank_static_member_function<T>::value)
+          >
+  constexpr std::size_t operator()() const
+  {
+    return T::rank();
+  }
+
+  COORD_EXEC_CHECK_DISABLE
+  template<class T,
+           COORD_REQUIRES(!has_rank_static_member_function<T>::value),
+           COORD_REQUIRES(is_number<T>::value)
+          >
+  constexpr std::size_t operator()() const
+  {
+    return 0;
+  }
+
+  COORD_EXEC_CHECK_DISABLE
+  template<class T,
+           COORD_REQUIRES(!has_rank_static_member_function<T>::value),
+           COORD_REQUIRES(!is_number<T>::value),
+           COORD_REQUIRES(is_tuple_like_of_types_with_static_rank<T>::value)
+          >
+  constexpr std::size_t operator()() const
+  {
+    return std::tuple_size<T>::value;
+  }
+
+
+  // dynamic cases do take a parameter
   COORD_EXEC_CHECK_DISABLE
   template<class T,
            COORD_REQUIRES(has_rank_member_function<T&&>::value)
           >
   COORD_ANNOTATION
-  constexpr std::size_t operator()(T&& c) const
+  constexpr std::size_t operator()(T&& arg) const
   {
-    return std::forward<T>(c).rank();
+    return std::forward<T>(arg).rank();
   }
 
   COORD_EXEC_CHECK_DISABLE
@@ -84,34 +124,21 @@ struct dispatch_rank
            COORD_REQUIRES(has_rank_free_function<T&&>::value)
           >
   COORD_ANNOTATION
-  constexpr std::size_t operator()(T&& c) const
+  constexpr std::size_t operator()(T&& arg) const
   {
-    return rank(std::forward<T>(c));
+    return rank(std::forward<T>(arg));
   }
 
   COORD_EXEC_CHECK_DISABLE
   template<class T,
            COORD_REQUIRES(!has_rank_member_function<T&&>::value),
-           COORD_REQUIRES(!has_rank_free_function<T&&>::value),
-           COORD_REQUIRES(is_number<remove_cvref_t<T&&>>::value)
+           COORD_REQUIRES(!has_rank_free_function<T&&>::value)
           >
   COORD_ANNOTATION
-  constexpr std::size_t operator()(T&&) const
+  constexpr auto operator()(T&&) const
+    -> decltype(operator()<remove_cvref_t<T&&>>())
   {
-    return 0;
-  }
-
-  COORD_EXEC_CHECK_DISABLE
-  template<class T,
-           COORD_REQUIRES(!has_rank_member_function<T&&>::value),
-           COORD_REQUIRES(!has_rank_free_function<T&&>::value),
-           COORD_REQUIRES(!is_number<remove_cvref_t<T&&>>::value),
-           COORD_REQUIRES(is_tuple_like_of_types_with_rank<remove_cvref_t<T&&>>::value)
-          >
-  COORD_ANNOTATION
-  constexpr std::size_t operator()(T&&) const
-  {
-    return std::tuple_size<remove_cvref_t<T&&>>::value;
+    return operator()<remove_cvref_t<T&&>>();
   }
 };
 
@@ -139,7 +166,7 @@ using rank_t = decltype(COORD_NAMESPACE::rank(std::declval<T>()));
 
 
 template<class T>
-static constexpr auto rank_v = rank(T{});
+static constexpr auto rank_v = rank.operator()<T>();
 
 
 namespace detail
@@ -147,7 +174,7 @@ namespace detail
 
 
 template<class T>
-struct is_tuple_like_of_types_with_rank
+struct is_tuple_like_of_types_with_static_rank
 {
   private:
     template<class U, std::size_t... I>
