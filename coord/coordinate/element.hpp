@@ -81,9 +81,10 @@ struct dispatch_element
            COORD_REQUIRES(has_element_member_function<i,T&&>::value)
           >
   COORD_ANNOTATION
-  constexpr std::size_t operator()(T&& arg) const
+  constexpr auto operator()(T&& arg) const
+    -> decltype(std::forward<T>(arg).template element<i>())
   {
-    return std::forward<T>(c).template element<i>();
+    return std::forward<T>(arg).template element<i>();
   }
 
   // XXX according to https://en.cppreference.com/w/cpp/language/adl,
