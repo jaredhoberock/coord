@@ -32,7 +32,8 @@
 COORD_NAMESPACE_OPEN_BRACE
 
 
-#include "coordinate/coordinate_rank.hpp"
+#include "coordinate/element.hpp"
+#include "coordinate/rank.hpp"
 
 
 COORD_NAMESPACE_CLOSE_BRACE
