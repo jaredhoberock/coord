@@ -17,8 +17,8 @@ void test_is_shape()
 
   static_assert(coord::is_shape<int2>::value, "Error.");
   static_assert(coord::is_shape<coord::int2>::value, "Error.");
-  static_assert(coord::is_shape<uint2>::value, "Error.");
-  static_assert(coord::is_shape<coord::uint2>::value, "Error.");
+  static_assert(coord::is_shape<uint3>::value, "Error.");
+  static_assert(coord::is_shape<coord::uint3>::value, "Error.");
   static_assert(coord::is_shape<std::tuple<int>>::value, "Error.");
   static_assert(coord::is_shape<std::tuple<int,unsigned int>>::value, "Error.");
   static_assert(coord::is_shape<std::tuple<int,unsigned int,std::size_t>>::value, "Error.");
