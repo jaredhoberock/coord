@@ -26,15 +26,15 @@
 
 #pragma once
 
-#include "../../detail/prologue.hpp"
+#include "prologue.hpp"
 
 #include <tuple>
 #include <type_traits>
-#include "../../detail/index_sequence.hpp"
-#include "../../detail/tuple_utility.hpp"
-#include "../../shape/make_shape.hpp"
-#include "../../shape/shape_size.hpp"
-#include "index_subspace_size.hpp"
+#include "../coordinate/rank.hpp"
+#include "index_sequence.hpp"
+#include "make.hpp"
+#include "subspace_size.hpp"
+#include "tuple_utility.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -55,36 +55,38 @@ Integral2 compact_row_major_stride_impl(const Integral1& shape, const Integral2&
 }
 
 
-template<class Shape, class Integral>
+template<class Shape, class Integral,
+         COORD_REQUIRES(!std::is_integral<Shape>::value)
+        >
 COORD_ANNOTATION
-typename std::enable_if<!std::is_integral<Shape>::value, Shape>::type
-  compact_row_major_stride_impl(const Shape& shape, const Integral& current_stride);
+constexpr Shape compact_row_major_stride_impl(const Shape& shape, const Integral& current_stride);
 
 
 template<class Shape, class Integral, std::size_t... Is>
 COORD_ANNOTATION
-Shape compact_row_major_stride_impl(const Shape& shape,
-                                    const Integral& current_stride,
-                                    index_sequence<Is...>)
+constexpr Shape compact_row_major_stride_impl(const Shape& shape,
+                                              const Integral& current_stride,
+                                              index_sequence<Is...>)
 {
-  return COORD_NAMESPACE::make_shape<Shape>(detail::compact_row_major_stride_impl(tu::get<Is>(shape), current_stride * detail::index_subspace_size(shape, detail::make_ascending_index_range<Is+1,shape_size<Shape>::value>{}))...);
+  return COORD_NAMESPACE::detail::make<Shape>(detail::compact_row_major_stride_impl(element<Is>(shape), current_stride * detail::subspace_size(shape, detail::make_ascending_index_range<Is+1,rank_v<Shape>>{}))...);
 }
 
 
-template<class Shape, class Integral>
+template<class Shape, class Integral,
+         COORD_REQUIRES_DEF(!std::is_integral<Shape>::value)
+        >
 COORD_ANNOTATION
-typename std::enable_if<!std::is_integral<Shape>::value, Shape>::type
-  compact_row_major_stride_impl(const Shape& shape, const Integral& current_stride)
+constexpr Shape compact_row_major_stride_impl(const Shape& shape, const Integral& current_stride)
 {
-  return detail::compact_row_major_stride_impl(shape, current_stride, make_index_sequence<shape_size<Shape>::value>{});
+  return detail::compact_row_major_stride_impl(shape, current_stride, make_index_sequence<rank_v<Shape>>{});
 }
 
 
 template<class Shape,
-         COORD_REQUIRES(is_shape<Shape>::value)
+         COORD_REQUIRES(is_discrete_v<Shape>)
         >
 COORD_ANNOTATION
-Shape compact_row_major_stride(const Shape& shape)
+constexpr Shape compact_row_major_stride(const Shape& shape)
 {
   return detail::compact_row_major_stride_impl(shape, 1);
 }
@@ -96,5 +98,5 @@ Shape compact_row_major_stride(const Shape& shape)
 COORD_NAMESPACE_CLOSE_BRACE
 
 
-#include "../../detail/epilogue.hpp"
+#include "epilogue.hpp"
 

@@ -29,8 +29,8 @@
 #include "../detail/prologue.hpp"
 
 #include <type_traits>
+#include "../detail/compact_row_major_stride.hpp"
 #include "../shape/is_shape.hpp"
-#include "detail/compact_row_major_stride.hpp"
 #include "detail/to_index.hpp"
 
 

@@ -1,6 +1,6 @@
 #include <cassert>
 #include <coord/detail/compact_column_major_stride.hpp>
-#include <coord/index/detail/compact_row_major_stride.hpp>
+#include <coord/detail/compact_row_major_stride.hpp>
 #include <coord/point.hpp>
 #include <coord/to_index.hpp>
 
