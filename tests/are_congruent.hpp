@@ -1,7 +1,7 @@
 #include <utility>
 #include <tuple>
 #include <array>
-#include <coord/are_congruent.hpp>
+#include <coord/congruent.hpp>
 
 void test_are_congruent()
 {

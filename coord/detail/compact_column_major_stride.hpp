@@ -30,9 +30,9 @@
 
 #include <type_traits>
 #include "../space_size.hpp"
-#include "../coordinate/element.hpp"
-#include "../coordinate/rank.hpp"
+#include "../element.hpp"
 #include "../discrete.hpp"
+#include "../rank.hpp"
 #include "index_sequence.hpp"
 #include "make.hpp"
 #include "subspace_size.hpp"

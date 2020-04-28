@@ -30,12 +30,12 @@
 
 #include <cstdint>
 #include <type_traits>
-#include "coordinate/element.hpp"
-#include "coordinate/rank.hpp"
-#include "are_congruent.hpp"
+#include "congruent.hpp"
 #include "detail/index_sequence.hpp"
 #include "detail/make.hpp"
 #include "detail/tuple_utility.hpp"
+#include "element.hpp"
+#include "rank.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE

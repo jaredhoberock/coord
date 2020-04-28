@@ -29,9 +29,9 @@
 #include "detail/prologue.hpp"
 
 #include <type_traits>
-#include "are_congruent.hpp"
-#include "coordinate/element.hpp"
-#include "coordinate/rank.hpp"
+#include "congruent.hpp"
+#include "element.hpp"
+#include "rank.hpp"
 #include "detail/index_sequence.hpp"
 #include "discrete.hpp"
 

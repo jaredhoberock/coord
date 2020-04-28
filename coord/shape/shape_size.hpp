@@ -30,7 +30,7 @@
 
 #include <cstdint>
 #include <type_traits>
-#include "../coordinate/rank.hpp"
+#include "../rank.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE

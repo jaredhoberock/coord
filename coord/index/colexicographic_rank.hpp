@@ -30,8 +30,8 @@
 
 #include <cstdint>
 #include <type_traits>
-#include "../are_congruent.hpp"
 #include "../colexicographic_index.hpp"
+#include "../congruent.hpp"
 #include "../discrete.hpp"
 
 

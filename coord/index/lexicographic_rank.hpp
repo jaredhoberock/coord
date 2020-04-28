@@ -28,7 +28,7 @@
 
 #include "../detail/prologue.hpp"
 
-#include "../are_congruent.hpp"
+#include "../congruent.hpp"
 #include "../discrete.hpp"
 #include "../lexicographic_index.hpp"
 

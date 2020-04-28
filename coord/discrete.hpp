@@ -29,7 +29,7 @@
 #include "detail/prologue.hpp"
 
 #include <type_traits>
-#include "coordinate/is_coordinal.hpp"
+#include "coordinal.hpp"
 #include "detail/conjunction.hpp"
 #include "detail/disjunction.hpp"
 

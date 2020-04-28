@@ -32,7 +32,7 @@
 #include <array>
 #include <type_traits>
 #include <utility>
-#include "../coordinate/rank.hpp"
+#include "../rank.hpp"
 #include "../discrete.hpp"
 
 

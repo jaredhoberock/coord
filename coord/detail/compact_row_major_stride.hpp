@@ -30,7 +30,7 @@
 
 #include <tuple>
 #include <type_traits>
-#include "../coordinate/rank.hpp"
+#include "../rank.hpp"
 #include "index_sequence.hpp"
 #include "make.hpp"
 #include "subspace_size.hpp"

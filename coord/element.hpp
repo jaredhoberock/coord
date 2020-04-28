@@ -26,14 +26,14 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "detail/prologue.hpp"
 
-#include "../detail/conjunction.hpp"
-#include "../detail/static_const.hpp"
-#include "../detail/tuple_utility.hpp"
-#include "../detail/type_traits/is_detected.hpp"
-#include "../detail/type_traits/is_number.hpp"
-#include "../detail/type_traits/remove_cvref.hpp"
+#include "detail/conjunction.hpp"
+#include "detail/static_const.hpp"
+#include "detail/tuple_utility.hpp"
+#include "detail/type_traits/is_detected.hpp"
+#include "detail/type_traits/is_number.hpp"
+#include "detail/type_traits/remove_cvref.hpp"
 #include "rank.hpp"
 
 
@@ -179,5 +179,5 @@ using element_t = detail::remove_cvref_t<decltype(COORD_NAMESPACE::element<i>(st
 COORD_NAMESPACE_CLOSE_BRACE
 
 
-#include "../detail/epilogue.hpp"
+#include "detail/epilogue.hpp"
 

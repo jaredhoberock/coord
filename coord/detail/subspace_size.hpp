@@ -29,7 +29,7 @@
 #include "prologue.hpp"
 
 #include <cstdint>
-#include "../coordinate/element.hpp"
+#include "../element.hpp"
 #include "../space_size.hpp"
 #include "index_sequence.hpp"
 

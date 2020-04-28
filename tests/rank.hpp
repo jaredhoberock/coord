@@ -1,6 +1,6 @@
 #include <utility>
 #include <tuple>
-#include <coord/coordinate/rank.hpp>
+#include <coord/rank.hpp>
 #include <coord/point.hpp>
 
 

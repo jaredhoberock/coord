@@ -1,7 +1,7 @@
 #include <utility>
 #include <tuple>
 #include <array>
-#include <coord/coordinate/is_coordinal.hpp>
+#include <coord/coordinal.hpp>
 #include <coord/point.hpp>
 
 

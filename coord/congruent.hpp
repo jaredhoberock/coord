@@ -29,9 +29,9 @@
 #include "detail/prologue.hpp"
 
 #include <type_traits>
-#include "coordinate/is_coordinal.hpp"
-#include "coordinate/rank.hpp"
+#include "coordinal.hpp"
 #include "detail/index_sequence.hpp"
+#include "rank.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE

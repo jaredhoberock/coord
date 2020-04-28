@@ -30,7 +30,7 @@
 
 #include <cstdint>
 #include <type_traits>
-#include "are_congruent.hpp"
+#include "congruent.hpp"
 #include "detail/compact_row_major_stride.hpp"
 #include "discrete.hpp"
 #include "to_index.hpp"

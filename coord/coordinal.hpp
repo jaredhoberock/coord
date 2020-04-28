@@ -26,10 +26,10 @@
 
 #pragma once
 
-#include "../detail/prologue.hpp"
+#include "detail/prologue.hpp"
 
 #include <type_traits>
-#include "../detail/index_sequence.hpp"
+#include "detail/index_sequence.hpp"
 #include "element.hpp"
 #include "rank.hpp"
 
@@ -110,5 +110,5 @@ static constexpr bool is_coordinal_v = is_coordinal<T>::value;
 COORD_NAMESPACE_CLOSE_BRACE
 
 
-#include "../detail/epilogue.hpp"
+#include "detail/epilogue.hpp"
 
