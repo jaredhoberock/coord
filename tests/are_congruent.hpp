@@ -29,6 +29,8 @@ void test_are_congruent()
   using float2 = std::pair<float,float>;
   using double3 = std::tuple<double, double, double>;
 
+  static_assert(!coord::are_congruent_v<int*,int>, "Error.");
+  static_assert(!coord::are_congruent_v<int*,int*>, "Error.");
   static_assert(!coord::are_congruent_v<int,uint2x3>, "Error.");
   static_assert(!coord::are_congruent_v<float2,double3>, "Error.");
   static_assert(!coord::are_congruent_v<uint3, uint2x3>, "Error.");
