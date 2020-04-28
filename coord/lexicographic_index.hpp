@@ -31,83 +31,22 @@
 #include <cstdint>
 #include <type_traits>
 #include "are_congruent.hpp"
-#include "coordinate/rank.hpp"
-#include "detail/subspace_size.hpp"
-#include "detail/tuple_utility.hpp"
+#include "detail/compact_column_major_stride.hpp"
 #include "discrete.hpp"
-#include "space_size.hpp"
+#include "to_index.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-template<class Integral1, class Integral2,
-         COORD_REQUIRES(std::is_integral<Integral1>::value),
-         COORD_REQUIRES(std::is_integral<Integral2>::value)
-        >
-COORD_ANNOTATION
-constexpr std::size_t lexicographic_index(const Integral1& coord, const Integral2&)
-{
-  return static_cast<std::size_t>(coord);
-}
-
-
 template<class Coord, class Shape,
-         COORD_REQUIRES(!std::is_integral<Coord>::value),
-         COORD_REQUIRES(!std::is_integral<Shape>::value),
          COORD_REQUIRES(are_discrete_v<Coord,Shape>),
          COORD_REQUIRES(are_congruent_v<Coord,Shape>)
         >
 COORD_ANNOTATION
-constexpr std::size_t lexicographic_index(const Coord& index, const Shape& shape);
-
-
-namespace detail
+constexpr std::size_t lexicographic_index(const Coord& coord, const Shape& shape) 
 {
-
-
-template<std::size_t prefix_size, class Shape>
-COORD_ANNOTATION
-constexpr std::size_t space_prefix_size(const Shape& shape)
-{
-  return detail::subspace_size(shape, make_index_sequence<prefix_size>{});
-}
-
-
-template<class Coord, class Shape>
-COORD_ANNOTATION
-constexpr std::size_t lexicographic_index_impl(const Coord&, const Shape&, index_sequence<>)
-{
-  return 0;
-}
-
-
-template<class Coord, class Shape,
-         std::size_t i0, std::size_t... is
-        >
-COORD_ANNOTATION
-constexpr std::size_t lexicographic_index_impl(const Coord& coord, const Shape& shape, index_sequence<i0, is...>)
-{
-  return COORD_NAMESPACE::lexicographic_index(element<i0>(coord), element<i0>(shape))
-    * detail::space_prefix_size<i0>(shape)
-    + detail::lexicographic_index_impl(coord, shape, index_sequence<is...>{})
-  ;
-}
-
-
-} // end detail
-
-
-template<class Coord, class Shape,
-         COORD_REQUIRES_DEF(!std::is_integral<Coord>::value),
-         COORD_REQUIRES_DEF(!std::is_integral<Shape>::value),
-         COORD_REQUIRES_DEF(are_discrete_v<Coord,Shape>),
-         COORD_REQUIRES_DEF(are_congruent_v<Coord,Shape>)
-        >
-COORD_ANNOTATION
-constexpr std::size_t lexicographic_index(const Coord& coord, const Shape& shape)
-{
-  return detail::lexicographic_index_impl(coord, shape, detail::make_index_sequence<rank_v<Shape>>{});
+  return COORD_NAMESPACE::to_index(coord, shape, detail::compact_column_major_stride(shape));
 }
 
 
