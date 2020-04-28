@@ -28,7 +28,7 @@
 
 #include "../detail/prologue.hpp"
 
-#include "../is_discrete.hpp"
+#include "../discrete.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE

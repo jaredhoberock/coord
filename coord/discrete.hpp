@@ -96,6 +96,22 @@ using is_discrete = detail::conjunction<
 >;
 
 
+#ifdef __cpp_variable_templates
+template<class T>
+static constexpr bool is_discrete_v = is_discrete<T>::value;
+#endif
+
+
+template<class... Types>
+using are_discrete = detail::conjunction<is_discrete<Types>...>;
+
+
+#ifdef __cpp_variable_templates
+template<class... Types>
+static constexpr bool are_discrete_v = are_discrete<Types...>::value;
+#endif
+
+
 COORD_NAMESPACE_CLOSE_BRACE
 
 
