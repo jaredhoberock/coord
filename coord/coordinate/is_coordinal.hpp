@@ -101,6 +101,12 @@ using is_coordinal = std::integral_constant<
 >;
 
 
+#ifdef __cpp_variable_templates
+template<class T>
+static constexpr bool is_coordinal_v = is_coordinal<T>::value;
+#endif
+
+
 COORD_NAMESPACE_CLOSE_BRACE
 
 
