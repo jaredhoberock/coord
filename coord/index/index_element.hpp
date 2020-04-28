@@ -28,55 +28,16 @@
 
 #include "../detail/prologue.hpp"
 
-
-#include <tuple>
-#include <type_traits>
+#include "../coordinate/element.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-namespace detail
-{
-
-
-// index_element<i,Index> is a type trait which returns the
-// type of the ith element of the given Index.
-//
-// An Index is either:
-// 1. An integral type or
-// 2. A tuple of Indices
-//
-// index_element's implementation below needs to handle these two cases.
-
-
-// case 2: Index is a Tuple-like type
-template<size_t i, class Index, class Enable = void>
-struct index_element_impl : std::tuple_element<i, Index> {};
-
-
-// case 1: Index is an integral type.
-// This case only makes sense when i is 0.
-template<size_t i, class Index>
-struct index_element_impl<
-  i,
-  Index,
-  typename std::enable_if<
-    std::is_integral<Index>::value and i == 0
-  >::type
->
-{
-  using type = Index;
-};
-
-
-} // end detail
-
-
 template<size_t i, class Index>
 struct index_element
 {
-  using type = typename detail::index_element_impl<i,Index>::type;
+  using type = element_t<i, Index>;
 };
 
 template<size_t i, class Index>
