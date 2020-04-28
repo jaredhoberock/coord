@@ -2,6 +2,7 @@
 #include <tuple>
 #include <array>
 #include <coord/is_discrete.hpp>
+#include <coord/point.hpp>
 
 void test_is_discrete()
 {
@@ -10,15 +11,19 @@ void test_is_discrete()
   static_assert(coord::is_discrete<unsigned int>::value, "Error.");
   static_assert(coord::is_discrete<std::size_t>::value, "Error.");
   static_assert(coord::is_discrete<std::tuple<char>>::value, "Error.");
+  static_assert(coord::is_discrete<coord::point<int,1>>::value, "Error.");
 
-  static_assert(coord::is_discrete<std::pair<int,int>>::value, "Error.");
+  using int2 = std::pair<int,int>;
+  using uint3 = std::tuple<unsigned int, unsigned int, unsigned int>;
+
+  static_assert(coord::is_discrete<int2>::value, "Error.");
+  static_assert(coord::is_discrete<coord::int2>::value, "Error.");
+  static_assert(coord::is_discrete<uint3>::value, "Error.");
+  static_assert(coord::is_discrete<coord::uint3>::value, "Error.");
   static_assert(coord::is_discrete<std::tuple<int>>::value, "Error.");
   static_assert(coord::is_discrete<std::tuple<int,unsigned int>>::value, "Error.");
   static_assert(coord::is_discrete<std::tuple<int,unsigned int,std::size_t>>::value, "Error.");
   static_assert(coord::is_discrete<std::array<std::size_t,3>>::value, "Error.");
-
-  using int2 = std::pair<int,int>;
-  using uint3 = std::tuple<unsigned int, unsigned int, unsigned int>;
 
   static_assert(coord::is_discrete<std::pair<int2,uint3>>::value, "Error.");
   static_assert(coord::is_discrete<std::tuple<int2,uint3,std::size_t>>::value, "Error.");
@@ -35,7 +40,9 @@ void test_is_discrete()
   static_assert(!coord::is_discrete<void>::value, "Error.");
   static_assert(!coord::is_discrete<std::pair<float,int>>::value, "Error.");
   static_assert(!coord::is_discrete<float2>::value, "Error.");
+  static_assert(!coord::is_discrete<coord::float2>::value, "Error.");
   static_assert(!coord::is_discrete<double3>::value, "Error.");
+  static_assert(!coord::is_discrete<coord::double3>::value, "Error.");
   static_assert(!coord::is_discrete<int*>::value, "Error.");
 }
 
