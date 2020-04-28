@@ -28,55 +28,16 @@
 
 #include "../detail/prologue.hpp"
 
-
-#include <tuple>
-#include <type_traits>
+#include "../coordinate/element.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-namespace detail
-{
-
-
-// shape_element<i,Shape> is a type trait which returns the
-// type of the ith element of the given Shape.
-//
-// A Shape is either:
-// 1. An integral type or
-// 2. A tuple of Shapes
-//
-// shape_element's implementation below needs to handle these two cases.
-
-
-// case 2: Shape is a Tuple-like type
-template<size_t i, class Shape, class Enable = void>
-struct shape_element_impl : std::tuple_element<i, Shape> {};
-
-
-// case 1: Shape is an integral type.
-// This case only makes sense when i is 0.
-template<size_t i, class Shape>
-struct shape_element_impl<
-  i,
-  Shape,
-  typename std::enable_if<
-    std::is_integral<Shape>::value and i == 0
-  >::type
->
-{
-  using type = Shape;
-};
-
-
-} // end detail
-
-
 template<size_t i, class Shape>
 struct shape_element
 {
-  using type = typename detail::shape_element_impl<i,Shape>::type;
+  using type = element_t<i, Shape>;
 };
 
 template<size_t i, class Shape>
