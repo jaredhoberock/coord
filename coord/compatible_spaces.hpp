@@ -40,22 +40,47 @@
 COORD_NAMESPACE_OPEN_BRACE
 
 
-template<class Integral1, class Integral2,
-         COORD_REQUIRES(std::is_integral<Integral1>::value),
-         COORD_REQUIRES(std::is_integral<Integral2>::value)
+template<class Integral, class Shape,
+         COORD_REQUIRES(std::is_integral<Integral>::value),
+         COORD_REQUIRES(is_discrete_v<Shape>)
         >
 COORD_ANNOTATION
-constexpr bool compatible_spaces(const Integral1& shape1, const Integral2& shape2)
+constexpr bool compatible_spaces(const Integral& shape1, const Shape& shape2)
 {
   return COORD_NAMESPACE::space_size(shape1) == COORD_NAMESPACE::space_size(shape2);
+}
+
+
+template<class Shape, class Integral,
+         COORD_REQUIRES(!std::is_integral<Shape>::value),
+         COORD_REQUIRES(is_discrete_v<Shape>),
+         COORD_REQUIRES(std::is_integral<Integral>::value)
+        >
+COORD_ANNOTATION
+constexpr bool compatible_spaces(const Shape&, const Integral&)
+{
+  return false;
 }
 
 
 template<class Shape1, class Shape2,
          COORD_REQUIRES(!std::is_integral<Shape1>::value),
          COORD_REQUIRES(!std::is_integral<Shape2>::value),
-         COORD_REQUIRES(are_congruent_v<Shape1,Shape2>),
-         COORD_REQUIRES(are_discrete_v<Shape1,Shape2>)
+         COORD_REQUIRES(are_discrete_v<Shape1,Shape2>),
+         COORD_REQUIRES(rank_v<Shape1> != rank_v<Shape2>)
+        >
+COORD_ANNOTATION
+constexpr bool compatible_spaces(const Shape1& shape1, const Shape2& shape2)
+{
+  return false;
+}
+
+
+template<class Shape1, class Shape2,
+         COORD_REQUIRES(!std::is_integral<Shape1>::value),
+         COORD_REQUIRES(!std::is_integral<Shape2>::value),
+         COORD_REQUIRES(are_discrete_v<Shape1,Shape2>),
+         COORD_REQUIRES(rank_v<Shape1> == rank_v<Shape2>)
         >
 COORD_ANNOTATION
 constexpr bool compatible_spaces(const Shape1& shape1, const Shape2& shape2);
@@ -87,8 +112,8 @@ constexpr bool compatible_spaces_impl(const Shape1& shape1, const Shape2& shape2
 template<class Shape1, class Shape2,
          COORD_REQUIRES_DEF(!std::is_integral<Shape1>::value),
          COORD_REQUIRES_DEF(!std::is_integral<Shape2>::value),
-         COORD_REQUIRES_DEF(are_congruent_v<Shape1,Shape2>),
-         COORD_REQUIRES_DEF(are_discrete_v<Shape1,Shape2>)
+         COORD_REQUIRES_DEF(are_discrete_v<Shape1,Shape2>),
+         COORD_REQUIRES_DEF(rank_v<Shape1> == rank_v<Shape2>)
         >
 COORD_ANNOTATION
 constexpr bool compatible_spaces(const Shape1& shape1, const Shape2& shape2)
