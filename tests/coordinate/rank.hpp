@@ -1,6 +1,8 @@
 #include <utility>
 #include <tuple>
 #include <coord/coordinate/rank.hpp>
+#include <coord/point.hpp>
+
 
 struct has_static_rank_member_function
 {
@@ -42,6 +44,9 @@ void test_rank()
   static_assert(0 == coord::rank(std::size_t{13}), "Error.");
   static_assert(1 == coord::rank_v<std::tuple<char>>, "Error.");
   static_assert(1 == coord::rank(std::make_tuple('a')), "Error.");
+  static_assert(1 == coord::rank_v<coord::point<int,1>>, "Error.");
+  // XXX point needs constexpr ctors
+  //static_assert(1 == coord::rank(coord::point<int,1>{13}), "Error.");
 
   static_assert(0 == coord::rank_v<float>, "Error.");
   static_assert(0 == coord::rank(3.14f), "Error.");
