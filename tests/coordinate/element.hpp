@@ -2,9 +2,10 @@
 #include <tuple>
 #include <array>
 #include <coord/coordinate/element.hpp>
+#include <coord/point.hpp>
 
 
-struct has_member_functions
+struct has_element_member_function
 {
   constexpr std::size_t rank()
   {
@@ -13,6 +14,22 @@ struct has_member_functions
 
   template<std::size_t i>
   int& element()
+  {
+    return a[i];
+  }
+
+  int a[4];
+};
+
+
+struct has_operator_bracket
+{
+  constexpr std::size_t rank()
+  {
+    return 4;
+  }
+
+  int& operator[](std::size_t i)
   {
     return a[i];
   }
@@ -55,9 +72,21 @@ void test_element()
   static_assert(std::is_same<uint3, coord::element_t<0, uint2x3>>::value, "Error.");
   static_assert(std::is_same<uint3, coord::element_t<1, uint2x3>>::value, "Error.");
 
-  static_assert(std::is_same<int, coord::element_t<0, has_member_functions>>::value, "Error.");
-  static_assert(std::is_same<int, coord::element_t<1, has_member_functions>>::value, "Error.");
-  static_assert(std::is_same<int, coord::element_t<2, has_member_functions>>::value, "Error.");
-  static_assert(std::is_same<int, coord::element_t<3, has_member_functions>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<0, has_element_member_function>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<1, has_element_member_function>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<2, has_element_member_function>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<3, has_element_member_function>>::value, "Error.");
+
+  static_assert(std::is_same<int, coord::element_t<0, has_operator_bracket>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<1, has_operator_bracket>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<2, has_operator_bracket>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<3, has_operator_bracket>>::value, "Error.");
+
+  static_assert(std::is_same<int, coord::element_t<0, coord::point<int,3>>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<1, coord::point<int,3>>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<2, coord::point<int,3>>>::value, "Error.");
+
+  static_assert(std::is_same<int, coord::element_t<0, coord::int2>>::value, "Error.");
+  static_assert(std::is_same<int, coord::element_t<1, coord::int2>>::value, "Error.");
 }
 

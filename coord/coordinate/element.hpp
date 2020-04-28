@@ -73,6 +73,14 @@ template<std::size_t i, class T>
 using has_element_free_function = is_detected<element_detail::element_free_function_t, std::integral_constant<std::size_t,i>, T>;
 
 
+template<class T, class Arg>
+using operator_bracket_t = decltype(std::declval<T>()[std::declval<Arg>()]);
+
+
+template<class T, class Arg>
+using has_operator_bracket = is_detected<operator_bracket_t, T, Arg>;
+
+
 template<std::size_t i>
 struct dispatch_element
 {
@@ -115,9 +123,25 @@ struct dispatch_element
 
   COORD_EXEC_CHECK_DISABLE
   template<class T,
+           COORD_REQUIRES(!has_element_member_function<i,T&&>::value),
+           COORD_REQUIRES(!has_element_free_function<i,T&&>::value),
+           COORD_REQUIRES(!is_number<remove_cvref_t<T&&>>::value),
+           COORD_REQUIRES(has_operator_bracket<T&&,std::size_t>::value)
+          >
+  COORD_ANNOTATION
+  constexpr auto operator()(T&& arg) const
+    -> decltype(std::forward<T>(arg)[i])
+  {
+    return std::forward<T>(arg)[i];
+  }
+
+  template<class T,
            COORD_REQUIRES(!has_rank_member_function<T&&>::value),
            COORD_REQUIRES(!has_rank_free_function<T&&>::value),
            COORD_REQUIRES(!is_number<remove_cvref_t<T&&>>::value),
+           COORD_REQUIRES(!has_operator_bracket<T&&,std::size_t>::value),
+
+           // XXX seems like this requirement should be simply has_std_get_free_function
            COORD_REQUIRES(is_tuple_like_of_types_with_static_rank<remove_cvref_t<T&&>>::value)
           >
   constexpr auto operator()(T&& arg) const
