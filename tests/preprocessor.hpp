@@ -51,6 +51,14 @@
 #error COORD_REQUIRES_IMPL defined in client code.
 #endif
 
+#ifdef COORD_REQUIRES_DEF
+#error COORD_REQUIRES_DEF defined in client code.
+#endif
+
+#ifdef COORD_REQUIRES_DEF_IMPL
+#error COORD_REQUIRES_DEF_IMPL defined in client code.
+#endif
+
 
 void test_preprocessor() {}
 

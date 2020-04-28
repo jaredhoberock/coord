@@ -27,6 +27,10 @@
 
 #  define COORD_REQUIRES(...) COORD_REQUIRES_IMPL(COORD_MAKE_UNIQUE(__deduced_true), __VA_ARGS__)
 
+#  define COORD_REQUIRES_DEF_IMPL(unique_name, ...) bool unique_name, typename std::enable_if<(unique_name and __VA_ARGS__)>::type*
+
+#  define COORD_REQUIRES_DEF(...) COORD_REQUIRES_DEF_IMPL(COORD_MAKE_UNIQUE(__deduced_true), __VA_ARGS__)
+
 #elif defined(COORD_REQUIRES)
 
 #  ifdef COORD_CONCATENATE_IMPL
@@ -47,6 +51,14 @@
 
 #  ifdef COORD_REQUIRES
 #    undef COORD_REQUIRES
+#  endif
+
+#  ifdef COORD_REQUIRES_DEF_IMPL
+#    undef COORD_REQUIRES_DEF_IMPL
+#  endif
+
+#  ifdef COORD_REQUIRES_DEF
+#    undef COORD_REQUIRES_DEF
 #  endif
 
 #endif
