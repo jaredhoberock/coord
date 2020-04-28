@@ -26,19 +26,24 @@
 
 #pragma once
 
-#include "detail/prologue.hpp"
+#include "prologue.hpp"
 
-#include <cstdint>
 #include <type_traits>
-#include "are_congruent.hpp"
-#include "coordinate/rank.hpp"
-#include "detail/subspace_size.hpp"
-#include "detail/tuple_utility.hpp"
-#include "discrete.hpp"
-#include "space_size.hpp"
+#include "../space_size.hpp"
+#include "../coordinate/element.hpp"
+#include "../coordinate/rank.hpp"
+#include "../discrete.hpp"
+#include "index_sequence.hpp"
+#include "make.hpp"
+#include "subspace_size.hpp"
+#include "tuple_utility.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
+
+
+namespace detail
+{
 
 
 template<class Integral1, class Integral2,
@@ -46,73 +51,54 @@ template<class Integral1, class Integral2,
          COORD_REQUIRES(std::is_integral<Integral2>::value)
         >
 COORD_ANNOTATION
-constexpr std::size_t lexicographic_index(const Integral1& coord, const Integral2&)
+constexpr Integral2 compact_column_major_stride_impl(const Integral1& shape, const Integral2& current_stride)
 {
-  return static_cast<std::size_t>(coord);
+  return current_stride;
 }
 
 
-template<class Coord, class Shape,
-         COORD_REQUIRES(!std::is_integral<Coord>::value),
-         COORD_REQUIRES(!std::is_integral<Shape>::value),
-         COORD_REQUIRES(are_discrete_v<Coord,Shape>),
-         COORD_REQUIRES(are_congruent_v<Coord,Shape>)
+template<class Shape, class Integral,
+         COORD_REQUIRES(!std::is_integral<Shape>::value)
         >
 COORD_ANNOTATION
-constexpr std::size_t lexicographic_index(const Coord& index, const Shape& shape);
+constexpr Shape compact_column_major_stride_impl(const Shape& shape, const Integral& current_stride);
 
 
-namespace detail
-{
-
-
-template<std::size_t prefix_size, class Shape>
+template<class Shape, class Integral, std::size_t... Is>
 COORD_ANNOTATION
-constexpr std::size_t space_prefix_size(const Shape& shape)
+constexpr Shape compact_column_major_stride_impl(const Shape& shape,
+                                                 const Integral& current_stride,
+                                                 index_sequence<Is...>)
 {
-  return detail::subspace_size(shape, make_index_sequence<prefix_size>{});
+  return COORD_NAMESPACE::detail::make<Shape>(detail::compact_column_major_stride_impl(element<Is>(shape), current_stride * detail::subspace_size(shape, detail::make_ascending_index_range<0,Is>{}))...);
 }
 
 
-template<class Coord, class Shape>
-COORD_ANNOTATION
-constexpr std::size_t lexicographic_index_impl(const Coord&, const Shape&, index_sequence<>)
-{
-  return 0;
-}
-
-
-template<class Coord, class Shape,
-         std::size_t i0, std::size_t... is
+template<class Shape, class Integral,
+         COORD_REQUIRES_DEF(!std::is_integral<Shape>::value)
         >
 COORD_ANNOTATION
-constexpr std::size_t lexicographic_index_impl(const Coord& coord, const Shape& shape, index_sequence<i0, is...>)
+constexpr Shape compact_column_major_stride_impl(const Shape& shape, const Integral& current_stride)
 {
-  return COORD_NAMESPACE::lexicographic_index(element<i0>(coord), element<i0>(shape))
-    * detail::space_prefix_size<i0>(shape)
-    + detail::lexicographic_index_impl(coord, shape, index_sequence<is...>{})
-  ;
+  return detail::compact_column_major_stride_impl(shape, current_stride, make_index_sequence<rank_v<Shape>>{});
+}
+
+
+template<class Shape,
+         COORD_REQUIRES(is_discrete_v<Shape>)
+        >
+COORD_ANNOTATION
+constexpr Shape compact_column_major_stride(const Shape& shape)
+{
+  return detail::compact_column_major_stride_impl(shape, 1);
 }
 
 
 } // end detail
 
 
-template<class Coord, class Shape,
-         COORD_REQUIRES_DEF(!std::is_integral<Coord>::value),
-         COORD_REQUIRES_DEF(!std::is_integral<Shape>::value),
-         COORD_REQUIRES_DEF(are_discrete_v<Coord,Shape>),
-         COORD_REQUIRES_DEF(are_congruent_v<Coord,Shape>)
-        >
-COORD_ANNOTATION
-constexpr std::size_t lexicographic_index(const Coord& coord, const Shape& shape)
-{
-  return detail::lexicographic_index_impl(coord, shape, detail::make_index_sequence<rank_v<Shape>>{});
-}
-
-
 COORD_NAMESPACE_CLOSE_BRACE
 
 
-#include "detail/epilogue.hpp"
+#include "epilogue.hpp"
 
