@@ -28,58 +28,18 @@
 
 #include "../detail/prologue.hpp"
 
-
-#include <array>
 #include <utility>
-#include "is_index.hpp"
-#include "index_size.hpp"
+#include "../detail/make.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-namespace detail
-{
-
-
-template<class Index>
-struct make_index_impl
-{
-  template<class... Args,
-           COORD_REQUIRES(std::is_constructible<Index,Args&&...>::value)
-          >
-  COORD_ANNOTATION
-  static Index make(Args&&... args)
-  {
-    return Index{std::forward<Args>(args)...};
-  }
-};
-
-// specialization for std::array, which requires the weird doubly-nested brace syntax
-template<class T, size_t n>
-struct make_index_impl<std::array<T,n>>
-{
-  template<class... Args>
-  COORD_ANNOTATION
-  static std::array<T,n> make(Args&&... args)
-  {
-    return std::array<T,n>{{std::forward<Args>(args)...}};
-  }
-};
-
-
-} // end detail
-
-
-// make_index makes an Index from a list of elements
-template<class Index, class... Args,
-         COORD_REQUIRES(is_index<Index>::value),
-         COORD_REQUIRES(index_size<Index>::value == sizeof...(Args))
-        >
+template<class Index, class... Args>
 COORD_ANNOTATION
-Index make_index(Args&&... args)
+constexpr Index make_index(Args&&... args)
 {
-  return detail::make_index_impl<Index>::make(std::forward<Args>(args)...);
+  return detail::make<Index>(std::forward<Args>(args)...);
 }
 
 

@@ -29,92 +29,22 @@
 #include "../detail/prologue.hpp"
 
 #include <cstdint>
-#include <type_traits>
-#include "../detail/tuple_utility.hpp"
-#include "../shape/is_shape.hpp"
+#include "../discrete.hpp"
+#include "../space_size.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
 // scalar case of index_space_size
-template<class Integral,
-         COORD_REQUIRES(std::is_integral<Integral>::value)
+template<class Shape,
+         COORD_REQUIRES(is_discrete_v<Shape>)
         >
 COORD_ANNOTATION
-std::size_t index_space_size(const Integral& shape)
+constexpr std::size_t index_space_size(const Shape& shape)
 {
-  return static_cast<std::size_t>(shape);
+  return COORD_NAMESPACE::space_size(shape);
 }
-
-
-namespace detail
-{
-namespace index_space_size_detail
-{
-
-
-// forward declaration of recursive_index_space_size for index_space_size_functor
-// the reason we give this a separate name from index_space_size is so that
-// the public-facing index_space_size overloads can use COORD_REQUIRES which
-// may not be used elegantly when a function prototype is separated from its definition
-template<typename Shape>
-COORD_ANNOTATION
-std::size_t recursive_index_space_size(const Shape& s);
-
-
-struct index_space_size_functor
-{
-  template<typename Shape>
-  COORD_ANNOTATION
-  std::size_t operator()(const Shape& shape)
-  {
-    return index_space_size_detail::recursive_index_space_size(shape);
-  }
-};
-
-
-} // end index_space_size_detail
-} // end detail
-
-
-// non-scalar case
-template<typename Shape,
-         COORD_REQUIRES(is_shape<Shape>::value),
-         COORD_REQUIRES(!std::is_integral<Shape>::value)
-        >
-COORD_ANNOTATION
-std::size_t index_space_size(const Shape& shape)
-{
-  // XXX we could use something like tuple_transform_reduce here
-
-  // transform s into a tuple of sizes
-  auto tuple_of_sizes = detail::tu::tuple_map(detail::index_space_size_detail::index_space_size_functor{}, shape);
-
-  // reduce the sizes
-  return detail::tu::tuple_reduce(tuple_of_sizes, std::size_t{1}, [](std::size_t x, std::size_t y)
-  {
-    return x * y;
-  });
-}
-
-
-namespace detail
-{
-namespace index_space_size_detail
-{
-
-
-template<typename Shape>
-COORD_ANNOTATION
-std::size_t recursive_index_space_size(const Shape& s)
-{
-  return COORD_NAMESPACE::index_space_size(s);
-}
-
-
-} // end index_space_size_detail
-} // end detail
 
 
 COORD_NAMESPACE_CLOSE_BRACE

@@ -28,107 +28,25 @@
 
 #include "../detail/prologue.hpp"
 
-
 #include <cstdint>
 #include <type_traits>
-#include "../detail/tuple_utility.hpp"
-#include "../shape/shape_size.hpp"
-#include "../shape/is_shape.hpp"
-#include "detail/index_subspace_size.hpp"
-#include "index_size.hpp"
-#include "index_space_size.hpp"
-#include "is_index.hpp"
+#include "../are_congruent.hpp"
+#include "../colexicographic_index.hpp"
+#include "../discrete.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-template<class Integral1, class Integral2,
-         COORD_REQUIRES(std::is_integral<Integral1>::value),
-         COORD_REQUIRES(std::is_integral<Integral2>::value)
+template<class Coord, class Shape,
+         COORD_REQUIRES(are_discrete_v<Coord,Shape>),
+         COORD_REQUIRES(are_congruent_v<Coord,Shape>)
         >
 COORD_ANNOTATION
-std::size_t colexicographic_rank(const Integral1& index, const Integral2&)
+constexpr std::size_t colexicographic_rank(const Coord& coord, const Shape& shape) 
 {
-  return static_cast<std::size_t>(index);
+  return COORD_NAMESPACE::colexicographic_index(coord, shape);
 }
-
-
-namespace detail
-{
-
-
-
-template<class Index, class Shape,
-         std::size_t i0, std::size_t... is
-        >
-COORD_ANNOTATION
-std::size_t recursive_colexicographic_rank(const Index& index, const Shape& shape, index_sequence<i0, is...>);
-
-
-} // end detail
-
-
-
-template<class Index, class Shape,
-         COORD_REQUIRES(is_index<Index>::value and !std::is_integral<Index>::value),
-         COORD_REQUIRES(is_shape<Shape>::value and !std::is_integral<Shape>::value),
-         COORD_REQUIRES(index_size<Index>::value == shape_size<Shape>::value)
-        >
-COORD_ANNOTATION
-std::size_t colexicographic_rank(const Index& index, const Shape& shape)
-{
-  return detail::recursive_colexicographic_rank(index, shape, detail::make_reversed_index_sequence<shape_size<Shape>::value>{});
-}
-
-
-namespace detail
-{
-
-
-template<class Shape, class Indices>
-struct shape_suffix_indices_impl;
-
-template<class Shape, std::size_t... Indices>
-struct shape_suffix_indices_impl<Shape, index_sequence<Indices...>>
-{
-  using type = index_sequence<(shape_size<Shape>::value - Indices - 1)...>;
-};
-
-
-template<class Shape, std::size_t suffix_size>
-using shape_suffix_indices = typename shape_suffix_indices_impl<Shape, make_index_sequence<suffix_size>>::type;
-
-
-template<std::size_t suffix_size, class Shape>
-COORD_ANNOTATION
-std::size_t index_space_suffix_size(const Shape& shape)
-{
-  return detail::index_subspace_size(shape, shape_suffix_indices<Shape, suffix_size>{});
-}
-
-
-template<class Index, class Shape>
-COORD_ANNOTATION
-std::size_t recursive_colexicographic_rank(const Index&, const Shape&, index_sequence<>)
-{
-  return 0;
-}
-
-template<class Index, class Shape,
-         std::size_t i0, std::size_t... is
-        >
-COORD_ANNOTATION
-std::size_t recursive_colexicographic_rank(const Index& index, const Shape& shape, index_sequence<i0, is...> seq)
-{
-  return COORD_NAMESPACE::colexicographic_rank(detail::tu::get<i0>(index), detail::tu::get<i0>(shape))
-    * detail::index_space_suffix_size<shape_size<Shape>::value - i0 - 1>(shape)
-    + detail::recursive_colexicographic_rank(index, shape, index_sequence<is...>{})
-  ;
-}
-
-
-} // end detail
 
 
 COORD_NAMESPACE_CLOSE_BRACE

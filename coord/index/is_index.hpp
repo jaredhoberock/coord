@@ -28,67 +28,16 @@
 
 #include "../detail/prologue.hpp"
 
-#include <cstdint>
-#include <type_traits>
-#include "../detail/conjunction.hpp"
-#include "../detail/disjunction.hpp"
-#include "../detail/index_sequence.hpp"
-#include "../detail/tuple_utility.hpp"
+#include "../discrete.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
-
-// a forward declaration for the benefit of detail::is_tuple_like_of_indices below
-template<class T>
-struct is_index;
-
-
-namespace detail
-{
-
-
-template<class T>
-struct is_tuple_like_of_indices
-{
-  private:
-    template<class U, std::size_t... I>
-    static constexpr bool test_elements_of_tuple(index_sequence<I...>)
-    {
-      return conjunction<
-        is_index<
-          typename std::tuple_element<I,U>::type
-        >...
-      >::value;
-    }
-
-    template<class U = T,
-             COORD_REQUIRES(tu::is_tuple_like<U>::value)
-            >
-    static constexpr bool test(int)
-    {
-      return test_elements_of_tuple<U>(make_index_sequence<std::tuple_size<U>::value>{});
-    }
-
-    template<class>
-    static constexpr bool test(...)
-    {
-      return false;
-    }
-
-  public:
-    static constexpr bool value = test<T>(0);
-};
-
-
-} // end detail
-
-
-// a type is a index if it
+// a type is an index if it
 //   * is an integral type, or 
 //   * it is a tuple-like type with elements which are themselves indices
 template<class T>
-struct is_index : detail::disjunction<std::is_integral<T>, detail::is_tuple_like_of_indices<T>> {};
+using is_index = is_discrete<T>;
 
 
 COORD_NAMESPACE_CLOSE_BRACE
