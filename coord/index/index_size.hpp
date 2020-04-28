@@ -28,47 +28,19 @@
 
 #include "../detail/prologue.hpp"
 
-
-#include <tuple>
+#include <cstdint>
 #include <type_traits>
+#include "../coordinate/rank.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-namespace detail
-{
-
-// index_size<i,Index> is a type trait which returns the
-// number of elements in an Index.
-//
-// An Index is either:
-// 1. An integral type or
-// 2. A tuple of Indices
-
-
-// case 2: Index is a Tuple-like type
-template<class Index, class Enable = void>
-struct index_size_impl : std::tuple_size<Index> {};
-
-
-// case 1: Index is an integral type.
 template<class Index>
-struct index_size_impl<
-  Index,
-  typename std::enable_if<
-    std::is_integral<Index>::value
-  >::type
-> : std::integral_constant<std::size_t, 1>
-{
-};
-
-
-} // end detail
-
-
-template<class Index>
-struct index_size : std::integral_constant<size_t, detail::index_size_impl<Index>::value> {};
+using index_size = std::integral_constant<
+  std::size_t,
+  std::is_integral<Index>::value ? 1 : rank_v<Index>
+>;
 
 
 COORD_NAMESPACE_CLOSE_BRACE

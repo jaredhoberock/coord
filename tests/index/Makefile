@@ -1,6 +1,6 @@
 CXX = clang
 INCLUDE_PATH = ../../
-CCFLAGS = -std=c++11 -Wall -Werror -ferror-limit=3 -I$(INCLUDE_PATH) -Wno-mismatched-tags
+CCFLAGS = -std=c++14 -Wall -Werror -ferror-limit=3 -I$(INCLUDE_PATH) -Wno-mismatched-tags
 NVCCFLAGS = -Xcompiler "$(CCFLAGS)"
 
 # this first builds all the tests, then runs them, then prints if everything ran successfully
