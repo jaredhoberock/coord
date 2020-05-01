@@ -50,17 +50,47 @@ namespace are_congruent_detail
 template<class Coord1, class Coord2>
 struct are_congruent_impl
 {
-  // terminal case 1: both arguments are numbers
+  // terminal case 1: both arguments are integers
   template<class Num1, class Num2,
-           COORD_REQUIRES(is_number<Num1>::value),
-           COORD_REQUIRES(is_number<Num2>::value)
+           COORD_REQUIRES(std::is_integral<Num1>::value),
+           COORD_REQUIRES(std::is_integral<Num2>::value)
           >
   static constexpr bool test(int)
   {
     return true;
   }
 
-  // terminal case 2: the first argument is a number and the second is not
+  // terminal case 2: both arguments are floating point
+  template<class Num1, class Num2,
+           COORD_REQUIRES(std::is_floating_point<Num1>::value),
+           COORD_REQUIRES(std::is_floating_point<Num2>::value)
+          >
+  static constexpr bool test(int)
+  {
+    return true;
+  }
+
+  // terminal case 3: the first argument is integral and the second is floating point
+  template<class Num1, class Num2,
+           COORD_REQUIRES(std::is_integral<Num1>::value),
+           COORD_REQUIRES(std::is_floating_point<Num2>::value)
+          >
+  static constexpr bool test(int)
+  {
+    return false;
+  }
+
+  // terminal case 4: the first argument is floating point and the second is integral
+  template<class Num1, class Num2,
+           COORD_REQUIRES(std::is_floating_point<Num1>::value),
+           COORD_REQUIRES(std::is_integral<Num2>::value)
+          >
+  static constexpr bool test(int)
+  {
+    return false;
+  }
+
+  // terminal case 5: the first argument is a number and the second is not
   template<class Num, class Coord,
            COORD_REQUIRES(is_number<Num>::value),
            COORD_REQUIRES(!is_number<Coord>::value)
@@ -70,7 +100,7 @@ struct are_congruent_impl
     return false;
   }
      
-  // terminal case 3: first argument is not a number and the second is a number
+  // terminal case 6: first argument is not a number and the second is a number
   template<class Coord, class Num,
            COORD_REQUIRES(!is_number<Coord>::value),
            COORD_REQUIRES(is_number<Num>::value)
@@ -132,6 +162,7 @@ struct are_congruent_impl
 } // end detail
 
 
+// XXX this should be variadic
 template<class Coord1, class Coord2>
 struct are_congruent : std::integral_constant<
   bool,

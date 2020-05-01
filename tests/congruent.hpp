@@ -3,13 +3,12 @@
 #include <array>
 #include <coord/congruent.hpp>
 
-void test_are_congruent()
+void test_congruent()
 {
   // test some congruent coordinates
   static_assert(coord::are_congruent_v<int,int>, "Error.h");
   static_assert(coord::are_congruent_v<int,unsigned int>, "Error.h");
   static_assert(coord::are_congruent_v<unsigned int,int>, "Error.h");
-  static_assert(coord::are_congruent_v<float,int>, "Error.h");
   static_assert(coord::are_congruent_v<float,float>, "Error.h");
   static_assert(coord::are_congruent_v<double,double>, "Error.h");
   static_assert(coord::are_congruent_v<double,float>, "Error.h");
@@ -29,6 +28,8 @@ void test_are_congruent()
   using float2 = std::pair<float,float>;
   using double3 = std::tuple<double, double, double>;
 
+  static_assert(!coord::are_congruent_v<char,double>, "Error.h");
+  static_assert(!coord::are_congruent_v<float,int>, "Error.h");
   static_assert(!coord::are_congruent_v<int*,int>, "Error.");
   static_assert(!coord::are_congruent_v<int*,int*>, "Error.");
   static_assert(!coord::are_congruent_v<int,uint2x3>, "Error.");
