@@ -31,13 +31,14 @@
 #include <type_traits>
 #include "coordinal.hpp"
 #include "detail/index_sequence.hpp"
+#include "detail/conjunction.hpp"
 #include "rank.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
 
 
-template<class Coord1, class Coord2>
+template<class Coord1, class Coord2, class... Coords>
 struct are_congruent;
 
 
@@ -162,17 +163,16 @@ struct are_congruent_impl
 } // end detail
 
 
-// XXX this should be variadic
-template<class Coord1, class Coord2>
-struct are_congruent : std::integral_constant<
-  bool,
-  detail::are_congruent_detail::are_congruent_impl<Coord1,Coord2>::value
+template<class Coord1, class Coord2, class... Coords>
+struct are_congruent : detail::conjunction<
+  detail::are_congruent_detail::are_congruent_impl<Coord1,Coord2>,
+  detail::are_congruent_detail::are_congruent_impl<Coord1,Coords>...
 >
 {};
 
 
-template<class T1, class T2>
-static constexpr bool are_congruent_v = are_congruent<T1,T2>::value;
+template<class T1, class T2, class... Ts>
+static constexpr bool are_congruent_v = are_congruent<T1,T2,Ts...>::value;
 
 
 COORD_NAMESPACE_CLOSE_BRACE
