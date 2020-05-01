@@ -31,6 +31,7 @@
 
 #include <type_traits>
 #include "../disjunction.hpp"
+#include "remove_cvref.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -41,7 +42,10 @@ namespace detail
 
 
 template<class T>
-using is_number = disjunction<std::is_floating_point<T>, std::is_integral<T>>;
+using is_number = disjunction<
+  std::is_floating_point<remove_cvref_t<T>>,
+  std::is_integral<remove_cvref_t<T>>
+>;
 
 
 } // end detail
