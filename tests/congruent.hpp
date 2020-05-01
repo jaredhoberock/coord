@@ -14,6 +14,9 @@ void test_congruent()
   static_assert(coord::are_congruent_v<double,float>, "Error.h");
   static_assert(coord::are_congruent_v<float,double>, "Error.h");
   static_assert(coord::are_congruent_v<char, int, unsigned int, char>, "Error.");
+
+  // test some congruent references
+  static_assert(coord::are_congruent_v<unsigned int&, int&&, const volatile unsigned int &, char>, "Error.h");
   
   static_assert(coord::are_congruent_v<std::tuple<int>, std::tuple<int>>, "Error.");
   static_assert(coord::are_congruent_v<std::tuple<int,std::size_t>, std::pair<char, int>>, "Error.");
@@ -38,5 +41,6 @@ void test_congruent()
   static_assert(!coord::are_congruent_v<uint3, uint2x3>, "Error.");
   static_assert(!coord::are_congruent_v<std::array<int,1>, int>, "Error.");
   static_assert(!coord::are_congruent_v<int, unsigned int, char, float>, "Error.");
+  static_assert(!coord::are_congruent_v<int&, float>, "Error.");
 }
 

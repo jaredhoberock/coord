@@ -30,8 +30,9 @@
 
 #include <type_traits>
 #include "coordinal.hpp"
-#include "detail/index_sequence.hpp"
 #include "detail/conjunction.hpp"
+#include "detail/index_sequence.hpp"
+#include "detail/type_traits/remove_cvref.hpp"
 #include "rank.hpp"
 
 
@@ -154,7 +155,8 @@ struct are_congruent_impl
     return false;
   }
 
-  static constexpr bool value = test<Coord1,Coord2>(0);
+  // remove cv ref because is_number and is_floating_point don't like references 
+  static constexpr bool value = test<remove_cvref_t<Coord1>, remove_cvref_t<Coord2>>(0);
 };
 
 
