@@ -22,20 +22,26 @@ struct has_member_functions
 };
 
 
-void test_is_coordinal()
+void test_coordinal()
 {
   // test some coordinates
   static_assert(coord::is_coordinal_v<has_member_functions>, "Error.");
 
   static_assert(coord::is_coordinal_v<int>, "Error.");
+  static_assert(coord::is_coordinal_v<int&>, "Error.");
   static_assert(coord::is_coordinal_v<unsigned int>, "Error.");
+  static_assert(coord::is_coordinal_v<const unsigned int&>, "Error.");
   static_assert(coord::is_coordinal_v<std::size_t>, "Error.");
+  static_assert(coord::is_coordinal_v<volatile std::size_t&>, "Error.");
   static_assert(coord::is_coordinal_v<std::tuple<char>>, "Error.");
+  static_assert(coord::is_coordinal_v<std::tuple<char&>>, "Error.");
+  static_assert(coord::is_coordinal_v<std::tuple<int, char&>>, "Error.");
 
   static_assert(coord::is_coordinal_v<float>, "Error.");
   static_assert(coord::is_coordinal_v<double>, "Error.");
   static_assert(coord::is_coordinal_v<std::tuple<float>>, "Error.");
   static_assert(coord::is_coordinal_v<std::tuple<double>>, "Error.");
+  static_assert(coord::is_coordinal_v<std::tuple<float&,float>>, "Error.");
 
   static_assert(coord::is_coordinal_v<std::pair<int,int>>, "Error.");
   static_assert(coord::is_coordinal_v<std::tuple<int>>, "Error.");
@@ -56,6 +62,5 @@ void test_is_coordinal()
 
   // test some non-coordinates
   static_assert(!coord::is_coordinal_v<std::tuple<int, char*>>, "Error.");
-  static_assert(!coord::is_coordinal_v<std::tuple<float&,float>>, "Error.");
 }
 

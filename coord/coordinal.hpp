@@ -63,16 +63,10 @@ struct has_elements<T, index_sequence<I...>> :
 
 
 template<class T>
-using rank_v_t = decltype(rank_v<T>);
-
-
-template<class T>
 struct is_coordinal_impl
 {
   template<class U,
            COORD_REQUIRES(is_detected<rank_t, U>::value),
-           // rank_v requires default constructibility of its argument
-           COORD_REQUIRES(std::is_default_constructible<U>::value),
            std::size_t N = rank_v<U>,
            COORD_REQUIRES(has_elements<T, make_index_sequence<N>>::value)
           >
