@@ -37,6 +37,7 @@ void test_rank()
   static_assert(1 == coord::rank(has_rank_free_function{}), "Error.");
 
   static_assert(0 == coord::rank_v<int>, "Error.");
+  static_assert(0 == coord::rank_v<int>, "Error.");
   static_assert(0 == coord::rank(13), "Error.");
   static_assert(0 == coord::rank_v<unsigned int>, "Error.");
   static_assert(0 == coord::rank(13u), "Error.");
@@ -47,6 +48,12 @@ void test_rank()
   static_assert(1 == coord::rank_v<coord::point<int,1>>, "Error.");
   // XXX point needs constexpr ctors
   //static_assert(1 == coord::rank(coord::point<int,1>{13}), "Error.");
+  
+
+  static_assert(0 == coord::rank_v<int&>, "Error.");
+  static_assert(0 == coord::rank_v<const unsigned int&>, "Error.");
+  static_assert(0 == coord::rank_v<std::size_t&&>, "Error.");
+  static_assert(1 == coord::rank_v<const std::tuple<char>&>, "Error.");
 
   static_assert(0 == coord::rank_v<float>, "Error.");
   static_assert(0 == coord::rank(3.14f), "Error.");
@@ -67,6 +74,7 @@ void test_rank()
   static_assert(2 == coord::rank_v<std::pair<int&,int&>>, "Error.");
   static_assert(2 == coord::rank_v<std::tuple<const int &,unsigned int &>>, "Error.");
   static_assert(3 == coord::rank_v<std::tuple<const int &,unsigned int, const std::size_t&>>, "Error.");
+  static_assert(3 == coord::rank_v<const std::tuple<const int &,unsigned int, const std::size_t&>&>, "Error.");
 
   int value1{};
   unsigned int value2{};

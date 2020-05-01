@@ -78,7 +78,7 @@ struct dispatch_rank
   // static cases do not take a parameter
   COORD_EXEC_CHECK_DISABLE
   template<class T,
-           COORD_REQUIRES(has_rank_static_member_function<T>::value)
+           COORD_REQUIRES(has_rank_static_member_function<remove_cvref_t<T>>::value)
           >
   constexpr std::size_t operator()() const
   {
@@ -87,7 +87,7 @@ struct dispatch_rank
 
   COORD_EXEC_CHECK_DISABLE
   template<class T,
-           COORD_REQUIRES(!has_rank_static_member_function<T>::value),
+           COORD_REQUIRES(!has_rank_static_member_function<remove_cvref_t<T>>::value),
            COORD_REQUIRES(is_number<T>::value)
           >
   constexpr std::size_t operator()() const
@@ -97,13 +97,13 @@ struct dispatch_rank
 
   COORD_EXEC_CHECK_DISABLE
   template<class T,
-           COORD_REQUIRES(!has_rank_static_member_function<T>::value),
+           COORD_REQUIRES(!has_rank_static_member_function<remove_cvref_t<T>>::value),
            COORD_REQUIRES(!is_number<T>::value),
-           COORD_REQUIRES(is_tuple_like_of_types_with_static_rank<T>::value)
+           COORD_REQUIRES(is_tuple_like_of_types_with_static_rank<remove_cvref_t<T>>::value)
           >
   constexpr std::size_t operator()() const
   {
-    return std::tuple_size<T>::value;
+    return std::tuple_size<remove_cvref_t<T>>::value;
   }
 
 
