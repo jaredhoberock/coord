@@ -237,7 +237,7 @@ template<class Shape,
 COORD_ANNOTATION
 lattice<Shape> make_lattice(const Shape& shape)
 {
-  return {shape};
+  return lattice<Shape>{shape};
 }
 
 
