@@ -30,8 +30,12 @@
 
 #include <type_traits>
 #include "coordinal.hpp"
+#include "element.hpp"
 #include "detail/conjunction.hpp"
 #include "detail/disjunction.hpp"
+#include "detail/index_sequence.hpp"
+#include "detail/type_traits/remove_cvref.hpp"
+#include "rank.hpp"
 
 
 COORD_NAMESPACE_OPEN_BRACE
@@ -46,25 +50,46 @@ struct terminal_elements_are_integral;
 
 
 template<class T>
-struct is_tuple_like_with_integral_terminal_elements
+struct is_discrete_impl
 {
   private:
-    template<class U, std::size_t... I>
-    static constexpr bool test_elements_of_tuple(index_sequence<I...>)
+    // integral types are discrete coordinates
+    template<class Integral,
+             COORD_REQUIRES(std::is_integral<remove_cvref_t<Integral>>::value)
+            >
+    static constexpr bool test(int)
+    {
+      return true;
+    }
+
+    // floating point types are not discrete coordinates
+    template<class Float,
+             COORD_REQUIRES(std::is_floating_point<remove_cvref_t<Float>>::value)
+            >
+    static constexpr bool test(int)
+    {
+      return false;
+    }
+
+    template<class Coord, std::size_t... I>
+    static constexpr bool test_elements_of_coordinate(index_sequence<I...>)
     {
       return conjunction<
-        terminal_elements_are_integral<
-          typename std::tuple_element<I,U>::type
+        is_discrete_impl<
+          element_t<I,Coord>
         >...
       >::value;
     }
 
-    template<class U = T,
-             COORD_REQUIRES(tu::is_tuple_like<U>::value)
+    // non-scalar coordinates may be discrete
+    template<class Coord,
+             COORD_REQUIRES(!std::is_integral<remove_cvref_t<Coord>>::value),
+             COORD_REQUIRES(!std::is_floating_point<remove_cvref_t<Coord>>::value),
+             COORD_REQUIRES(is_coordinal_v<Coord>)
             >
     static constexpr bool test(int)
     {
-      return test_elements_of_tuple<U>(make_index_sequence<std::tuple_size<U>::value>{});
+      return test_elements_of_coordinate<Coord>(make_index_sequence<rank_v<Coord>>{});
     }
 
     template<class>
@@ -78,21 +103,13 @@ struct is_tuple_like_with_integral_terminal_elements
 };
 
 
-template<class T>
-struct terminal_elements_are_integral : detail::disjunction<
-  std::is_integral<T>,
-  is_tuple_like_with_integral_terminal_elements<T>
->
-{};
-
-
 } // end detail
 
 
 template<class T>
-using is_discrete = detail::conjunction<
-  is_coordinal<T>,
-  detail::terminal_elements_are_integral<T>
+using is_discrete = std::integral_constant<
+  bool,
+  detail::is_discrete_impl<T>::value
 >;
 
 

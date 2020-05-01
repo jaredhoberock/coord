@@ -8,11 +8,13 @@ void test_discrete()
 {
   // test some discrete coordinates
   static_assert(coord::is_discrete_v<int>, "Error.");
+  static_assert(coord::is_discrete_v<int&>, "Error.");
   static_assert(coord::is_discrete_v<unsigned int>, "Error.");
   static_assert(coord::is_discrete_v<std::size_t>, "Error.");
   static_assert(coord::is_discrete_v<std::tuple<char>>, "Error.");
   static_assert(coord::is_discrete_v<coord::point<int,1>>, "Error.");
   static_assert(coord::are_discrete_v<int, unsigned int, std::size_t, std::tuple<char>, coord::point<int,1>>, "Error.");
+  static_assert(coord::are_discrete_v<int, unsigned int&, const std::size_t&, std::tuple<char&>, coord::point<int,1>&&>, "Error.");
 
   using int2 = std::pair<int,int>;
   using uint3 = std::tuple<unsigned int, unsigned int, unsigned int>;
@@ -46,5 +48,6 @@ void test_discrete()
   static_assert(!coord::is_discrete_v<coord::double3>, "Error.");
   static_assert(!coord::is_discrete_v<int*>, "Error.");
   static_assert(!coord::are_discrete_v<int,float>, "Error.");
+  static_assert(!coord::are_discrete_v<int&,float>, "Error.");
 }
 
